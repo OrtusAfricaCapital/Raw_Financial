@@ -1,0 +1,47 @@
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">Staff service details</h3>
+    </div>
+    <div class="card_body">
+           <div class="col-lg-3 col-6" style="margin-top: 10px;">
+               <!-- small box -->
+               <div class="small-box bg-info">
+                 <div class="inner">
+                   <h3>{{no_transactions }}</h3>
+   
+                   <p>Transactions</p>
+                 </div>
+                 
+               </div>
+             </div>
+    </div>
+    <div class="card-body">
+         <table id="example1" class="table table-bordered table-striped">
+           <thead>
+           <tr>
+             <th>Client</th>
+             <th>Service Done</th>
+             <th>Service Date</th>
+           </tr>
+           </thead>
+           <tbody>
+              
+               {% for fi in transaction_details %}
+               <tr>
+                 <td>{{ fi.client_car }}</td>
+                 <td>{{ fi.service_provided }}</td>
+                 <td>{{ fi.serviced_at }}</td>
+                
+               </tr>
+               {% endfor %}
+           </tbody>
+           <tfoot>
+           <tr>
+               <th>Client</th>
+               <th>Service Done</th>
+               <th>Service Date</th>
+           </tr>
+           </tfoot>
+         </table>
+    </div>
+</div>
