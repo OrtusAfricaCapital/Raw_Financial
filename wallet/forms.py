@@ -1,6 +1,6 @@
 from django import forms
 from .models import *
-from bootstrap_modal_forms.forms import BSModalModelForm
+
 
 
 class DepositForm(forms.ModelForm):
@@ -15,7 +15,4 @@ class WithdrawForm(forms.ModelForm):
         model = WalletWithdraw
         fields = ('channel','amount')
 
-class depositForm(BSModalModelForm):
-    class Meta:
-        model = WalletDeposit
-        fields = ['investor','amount',]
+
