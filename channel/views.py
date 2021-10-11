@@ -2,8 +2,12 @@ from wallet.forms import DepositForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
+from django.db.models import Sum
 from .forms import *
 from .models import *
+from trust_network.models import *
+from borrowers.models import *
+from loans.models import *
 
 # Create your views here.
 class ChannelView(ListView):
@@ -28,19 +32,33 @@ def channel_view(request):
 
 def channel_details(request, id):
     channel_details = get_object_or_404(Channel, pk=id)
-    if request.method == 'POST':
-        df = WithdrawForm(request.POST or None)
-        if df.is_valid():
-            d = df.save(commit=False)
-            d.channel = channel_details
-            df.save()
-            messages.success(request, "account credited successfully")
-            return redirect('channel_details')
-        else:
-            df = WithdrawForm()
-            messages.error(request, 'something went wrong')
-    else:
-        df = WithdrawForm()
-        return render(request, 'channel/channel_details.html', context={'channel_details':channel_details, 'wf_form':df})
+    trustnetwork_channel = TrustNetwork.objects.filter(channel=id)
+    context = {
+        'tn_channel':trustnetwork_channel,
+        'channel_details':channel_details,
+    }
+    return render(request, 'channel/channel_details.html', context)
+    
+    
 
 
+def show_borrowers_in_network(request, id):
+    borrowers = Borrower.objects.filter(tn=id)
+    
+    
+    
+    context = {
+        'borrowers':borrowers,
+    }
+    return render(request, 'channel/channel_borrower.html', context)
+
+def loan_borrower(request, id):
+    loan_borrowed = Loans.objects.filter(borrower=id)
+    principal_sum = Loans.objects.filter(borrower=id).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+
+
+    context = {
+        'loan_borrower':loan_borrowed,
+        'total_borrowed': principal_sum
+    }
+    return render(request, 'channel/loan_borrowed.html', context)

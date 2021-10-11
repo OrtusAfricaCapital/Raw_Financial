@@ -24,3 +24,6 @@ def create_tn_view(request):
     else:
         tn_form = TrustNetworkForm()
         return render(request, 'tn/create_tn.html', context={'tn_form':tn_form})
+
+
+    

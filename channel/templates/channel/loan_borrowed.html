@@ -35,12 +35,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Channel Details</h1>
+            <h1>Loan Details</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Channel Details</li>
+              <li class="breadcrumb-item active">Loan Details</li>
             </ol>
           </div>
         </div>
@@ -49,62 +49,9 @@
 
     <!-- Main content -->
     <section class="content">
-
-      <!-- Default box -->
       <div class="card">
         <div class="card-header">
-        	
-          <h3 class="card-title">Details for : <b>{{channel_details.ChannelName}}</b></h3>
-          <div class="card-tools">
-          	<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">
-                  Add Service
-            </button>-->
-            <!--<button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-              <i class="fas fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
-              <i class="fas fa-times"></i></button>-->
-          </div>
-        </div>
-        <div class="card-body">
-
-          <div class="row">
-				          <div class="col-md-6">           
-				            <dl class="row" style="padding-bottom: 10px;">
-				                <dd class="col-sm-4" style=" font-size: 20px; font-weight:bold;">{{channel_details.ChannelName}}</dd>
-				                <dt class="col-sm-8"></dt>
-				                <dd class="col-sm-4">Phone Number:</dd>
-				                <dt class="col-sm-8">{{channel_details.PhoneNumber}}</dt> 
-                                <dd class="col-sm-4">Email:</dd>
-				                <dt class="col-sm-8">{{channel_details.EmailAddress}}</dt>             
-				            </dl>
-				          </div>
-				          <div class="col-md-6">
-				            <dl class="row" style="padding-bottom: 10px;">                
-				                <dd class="col-sm-4">Short Description:</dd>
-				                <dt class="col-sm-8">{{channel_details.ShortDescription}}</dt>
-				                <dd class="col-sm-4">MonthlyInterestRate:</dd>
-				                <dt class="col-sm-8">{{investor_details.MonthlyInterestRate}}</dt>
-                                <dd class="col-sm-4">Verification Status:</dd>
-				                <dt class="col-sm-8">{{investor_details.VerificationStatus}}</dt> 
-                                <dd class="col-sm-4">InstitutionalStatus:</dd>
-				                <dt class="col-sm-8">{{investor_details.InstitutionalStatus}}</dt>            
-				            </dl>
-				          </div>
-		  </div>
-        </div>
-        <!-- /.card-body -->
-        <div class="card-footer">
-            <!--<a class="btn btn-primary" href="{% url 'create_trustnetwork' %}" >Show Trust Networks</a>-->
-            <!--<a class="btn btn-warning" href="#"></a>-->
-          <!--<a class="btn btn-warning" href="#" >Add Channel</a>-->
-        </div>
-        <!-- /.card-footer-->
-      </div>
-      <!-- /.card -->
-      <!--start investor portfolio-->
-      <div class="card">
-        <div class="card-header">
-            <h1 class="card-title">Channel Wallet</h1></h3>
+            <h1 class="card-title">Loan Details</h1></h3>
         </div>
         
         <div class="card-body">
@@ -113,9 +60,9 @@
                     <!-- small box -->
                     <div class="small-box bg-white">
                       <div class="inner">
-                        <h3>UGX 10,000,000</h3>
+                        <h3>UGX {{total_borrowed}}</h3>
         
-                        <p>Amount</p>
+                        <p>Amount Borrowed</p>
                       </div>
                       
                     </div>
@@ -124,9 +71,9 @@
                     <!-- small box -->
                     <div class="small-box bg-white">
                       <div class="inner">
-                        <h3>UGX 100,000</h3>
+                        <h3>UGX 0</h3>
         
-                        <p>Interest Paid</p>
+                        <p>Interest</p>
                       </div>
                       
                     </div>
@@ -138,7 +85,7 @@
       <!--end investor portfolio-->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Show Trust Networks</h3>
+          <h3 class="card-title">Show Loans</h3>
           <!--<a class="btn btn-info float-right" style="color: white;" href="{% url 'create_channel' %}">Add </a>-->
           <!--show messages-->
         </div>
@@ -152,21 +99,34 @@
             <thead>
             <tr>
               <th>Name</th>
-              <th>Action</th>
+              <th>Loan Product</th>
+              <th>Disbursed By</th>
+              <th>Principal Amount</th>
+              <th>Interest Rate</th>
+              <th>Loan Date</th>
+              <th>Loan Duration</th>
+              
             </tr>
             </thead>
             <tbody>
               
-              {% for fi in tn_channel %}
+              {% for fi in loan_borrower %}
             <tr>
-              <td>{{ fi.Name }}</td>
-                <td class="project-actions text-center">
+              <td>{{ fi.borrower.first_name }}</td>
+              <td>{{ fi.loan_product }}</td>
+              <td>{{ fi.disbursed_by }}</td>
+              <td>{{ fi.principal_amount }}</td>
+              <td>{{ fi.interest_rate }}</td>
+              <td>{{ fi.loan_release_date }}</td>
+              <td>{{ fi.loan_duration }}</td>
+              
+                <!--<td class="project-actions text-center">
                       <a class="btn btn-primary btn-sm" href="{% url 'channel_borrowers' id=fi.pk %}" class="btn btn-primary">
                           <i class="fas fa-folder">
                           </i>
                           View Borrowers
                       </a>
-                      <!--<a class="btn btn-info btn-sm" href="#">
+                      <a class="btn btn-info btn-sm" href="#">
                           <i class="fas fa-pencil-alt">
                           </i>
                           Edit
@@ -175,15 +135,20 @@
                           <i class="fas fa-trash">
                           </i>
                           Delete
-                      </a>-->
-                    </td>
+                      </a>
+                    </td>-->
             </tr>
             {% endfor %}
             </tbody>
             <tfoot>
             <tr>
               <th>Name</th>
-              <th>Action</th>
+              <th>Loan Product</th>
+              <th>Disbursed By</th>
+              <th>Principal Amount</th>
+              <th>Interest Rate</th>
+              <th>Loan Date</th>
+              <th>Loan Duration</th>
             </tr>
             </tfoot>
           </table>
