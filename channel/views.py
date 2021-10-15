@@ -17,7 +17,7 @@ class ChannelView(ListView):
 def channel_view(request):
     context = {}
     if request.method == 'POST':
-        channel_form = ChannelForm(request.POST)
+        channel_form = ChannelForm(request.POST, request.FILES)
         if channel_form.is_valid():
             channel_form.save()
             messages.success(request, "created channel")

@@ -16,11 +16,11 @@ def create_borrower_view(request):
         if b_form.is_valid():
             b_form.save()
             messages.success(request, "successfuly created borrower")
-            redirect('show_borrowers')
+            return redirect('show_borrowers')
         else:
             b_form = BorrowerForm()
             messages.error(request, "oops, something happened")
-            redirect('create_borrower')
+            return redirect('create_borrower')
     else:
         b_form = BorrowerForm()
         return render(request, 'borrower/create_borrower.html', context={'borrower_form':b_form})
