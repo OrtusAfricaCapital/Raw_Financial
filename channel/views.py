@@ -62,3 +62,14 @@ def loan_borrower(request, id):
         'total_borrowed': principal_sum
     }
     return render(request, 'channel/loan_borrowed.html', context)
+
+def loan_details(request, id):
+    loan_borrowed = Loans.objects.filter(loan=id)
+    principal_sum = Loans.objects.filter(loan=id).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+
+
+    context = {
+        'loan_borrower':loan_borrowed,
+        'total_borrowed': principal_sum
+    }
+    return render(request, 'channel/loan_borrowed.html', context)

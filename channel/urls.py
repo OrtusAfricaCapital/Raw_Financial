@@ -7,4 +7,5 @@ urlpatterns = [
     path('channel_details/<int:id>/', channel_details, name='channel_details'),
     path('channel_borrowers/<int:id>/', show_borrowers_in_network, name="channel_borrowers"),
     path('loan_borrowed/<int:id>', loan_borrower, name='loan_borrowed'),
+    
 ]
