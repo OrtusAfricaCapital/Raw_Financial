@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'borrowers',
     'wallet',
     'bootstrap_modal_forms',
+    'numpy',
     
 ]
 

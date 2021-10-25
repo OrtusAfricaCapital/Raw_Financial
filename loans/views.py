@@ -8,7 +8,9 @@ from .models import *
 
 # Create your views here.
 
-
+def interest(p,r,t):
+    i = (p*r*t)/100
+    return i
 
 class LoanView(ListView):
     model = Loans
@@ -30,14 +32,19 @@ def create_loan_view(request):
         return render(request, 'loans/create_loan.html', context={'loan_form':loan_form})
 
 def loan_details(request, id):
-    loan_borrowed = Loans.objects.filter(id=id)
-    principal_sum = Loans.objects.filter(id=id).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+    loan_borrowed = Loans.objects.get(id=id)
+    #principal_sum = Loans.objects.(id=id).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
 
     #interest = ((10/100)/30) * loan_borrowed['principal_amount']
-
+    
+    interest = (loan_borrowed.principal_amount*1*10)/100
+    ti = interest+loan_borrowed.principal_amount
+    #Compound_interest = loan_borrowed.principal_amount * ((1+10/100)**1 - 1)
     context = {
         'loan_borrower':loan_borrowed,
-        'total_borrowed': principal_sum,
+        'total_borrowed': loan_borrowed.principal_amount,
+        'interest':interest,
+        'ti': ti
         
     }
     return render(request, 'loans/loan_details.html', context)
