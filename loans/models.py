@@ -21,6 +21,7 @@ class Loans(models.Model):
     loan_release_date = models.DateTimeField()
     interest_rate = models.FloatField()
     loan_duration = models.IntegerField()
+    
 
     def __str__(self):
         return self.loan_product

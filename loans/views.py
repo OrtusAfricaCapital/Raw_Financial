@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Sum
 from .forms import *
 from .models import *
+from utils import calculations
 #from numpy import impt
 
 # Create your views here.
@@ -37,7 +38,8 @@ def loan_details(request, id):
 
     #interest = ((10/100)/30) * loan_borrowed['principal_amount']
     
-    interest = (loan_borrowed.principal_amount*1*10)/100
+    #interest = (loan_borrowed.principal_amount*1*10)/100
+    interest = calculations.calculate_intrest(loan_borrowed.principal_amount, 10)
     ti = interest+loan_borrowed.principal_amount
     #Compound_interest = loan_borrowed.principal_amount * ((1+10/100)**1 - 1)
     context = {
