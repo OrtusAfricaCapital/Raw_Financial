@@ -67,9 +67,8 @@
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                  <th>Product</th>
+                  
                   <th>Borrower</th>
-                  <th>Disbursed By</th>
                   <th>Amount</th>
                   <th>When</th>
                   <th>Action</th>
@@ -79,9 +78,9 @@
                   
                   {% for fi in object_list %}
                 <tr>
-                  <td>{{ fi.loan_product }}</td>
+                 
                   <td>{{ fi.borrower }}</td>
-                  <td>{{ fi.disbursed_by }}</td>
+                 
                   <td>{{ fi.principal_amount }}</td>
                   <td>{{ fi.loan_release_date }}</td>
                   
@@ -107,11 +106,10 @@
                 </tbody>
                 <tfoot>
                 <tr>
-                  <th>Product</th>
                   <th>Borrower</th>
-                  <th>Disbursed By</th>
                   <th>Amount</th>
                   <th>When</th>
+                  <th>Action</th>
                 </tr>
                 </tfoot>
               </table>

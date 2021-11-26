@@ -1,9 +1,16 @@
 from django.db import models
 from trust_network.models import *
-
+import random
 
 # Create your models here.
+
+def borrower_rand():
+    rand = random.randint(1000,9000)
+    return "BR-"+str(rand)
+
+
 class Borrower(models.Model):
+    borrower_id = models.CharField(max_length=20, default=borrower_rand, editable=False)
     tn = models.ForeignKey(TrustNetwork, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)

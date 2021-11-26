@@ -17,12 +17,12 @@ def index(request):
     loans_issued = Loans.objects.all().aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
     loans_due_sum = Loans.objects.filter(loan_release_date__gt=datetime.now()-timedelta(days=30)).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
     loans_due = Loans.objects.filter(loan_release_date__gt=datetime.now()-timedelta(days=30)).count()
+    amount_paid = Payment.objects.all().aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0.0
 
     #npl percentage
     npl_percentage = calculations.percentage_npl_amountlent(loans_due_sum,loans_issued)
 
     #pl calculation
-    amount_paid = 301430000
     pl = calculations.pl(loans_issued, amount_paid)
 
     pl_percentage = calculations.percentage_pl_amountlent(pl, loans_issued)

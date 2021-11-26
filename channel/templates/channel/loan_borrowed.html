@@ -86,7 +86,7 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">Show Loans</h3>
-          <a class="btn btn-info float-right" style="color: white;" href="{% url 'create_loan' %}">Give Loan</a>
+          <a class="btn btn-info float-right" style="color: white;" href="{% url 'create_loan' id=id %}">Give Loan</a>
           <!--show messages-->
         </div>
         <!-- Modal -->
@@ -99,12 +99,11 @@
             <thead>
             <tr>
               <th>Name</th>
-              <th>Loan Product</th>
-              <th>Disbursed By</th>
               <th>Principal Amount</th>
               <th>Interest Rate</th>
               <th>Loan Date</th>
               <th>Loan Duration</th>
+              <th>Action</th>
               
             </tr>
             </thead>
@@ -113,20 +112,19 @@
               {% for fi in loan_borrower %}
             <tr>
               <td>{{ fi.borrower.first_name }}</td>
-              <td>{{ fi.loan_product }}</td>
-              <td>{{ fi.disbursed_by }}</td>
+              
               <td>{{ fi.principal_amount }}</td>
               <td>{{ fi.interest_rate }}</td>
               <td>{{ fi.loan_release_date }}</td>
               <td>{{ fi.loan_duration }}</td>
               
-                <!--<td class="project-actions text-center">
-                      <a class="btn btn-primary btn-sm" href="{% url 'channel_borrowers' id=fi.pk %}" class="btn btn-primary">
+                <td class="project-actions text-center">
+                      <a class="btn btn-primary btn-sm" href="{% url 'payment' id=fi.id %}" class="btn btn-primary">
                           <i class="fas fa-folder">
                           </i>
-                          View Borrowers
+                          Record Payment
                       </a>
-                      <a class="btn btn-info btn-sm" href="#">
+                      <!--<a class="btn btn-info btn-sm" href="#">
                           <i class="fas fa-pencil-alt">
                           </i>
                           Edit
@@ -135,20 +133,19 @@
                           <i class="fas fa-trash">
                           </i>
                           Delete
-                      </a>
-                    </td>-->
+                      </a>-->
+                    </td>
             </tr>
             {% endfor %}
             </tbody>
             <tfoot>
             <tr>
               <th>Name</th>
-              <th>Loan Product</th>
-              <th>Disbursed By</th>
               <th>Principal Amount</th>
               <th>Interest Rate</th>
               <th>Loan Date</th>
               <th>Loan Duration</th>
+              <th>Action</th>
             </tr>
             </tfoot>
           </table>

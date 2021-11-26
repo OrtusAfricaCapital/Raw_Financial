@@ -8,6 +8,7 @@ from .models import *
 from trust_network.models import *
 from borrowers.models import *
 from loans.models import *
+from loans.forms import *
 
 # Create your views here.
 class ChannelView(ListView):
@@ -49,6 +50,7 @@ def show_borrowers_in_network(request, id):
     
     context = {
         'borrowers':borrowers,
+        'id':id,
     }
     return render(request, 'channel/channel_borrower.html', context)
 
@@ -59,7 +61,8 @@ def loan_borrower(request, id):
 
     context = {
         'loan_borrower':loan_borrowed,
-        'total_borrowed': principal_sum
+        'total_borrowed': principal_sum,
+        'id':id
     }
     return render(request, 'channel/loan_borrowed.html', context)
 
@@ -73,3 +76,27 @@ def loan_details(request, id):
         'total_borrowed': principal_sum
     }
     return render(request, 'channel/loan_borrowed.html', context)
+
+
+def make_payment(request, id):
+    loan = Loans.objects.filter(borrower=id)[0]
+    context = {}
+    payment_form = PaymentForm()
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST or None)
+        if payment_form.is_valid():
+            pf = payment_form.save(commit=False)
+            pf.user = request.user
+            pf.loan_id = loan
+            pf.borrower_id = loan.borrower
+            pf.save()
+            messages.success(request, "Payment successfully logged")
+            return redirect('loan_borrowed', id=id)
+        else:
+            
+            context = {'form':payment_form}
+            messages.error(request, "Oops, Field error")
+            return render(request, 'loans/create_payment.html', context)
+    else:
+        context = {'form':payment_form}
+        return render(request, 'loans/create_payment.html', context)
