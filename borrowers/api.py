@@ -23,14 +23,21 @@ def get_all_borrowers(request):
         else:
             return Response({"erorr":"No Borrowers"}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "POST":
-        serializer = BorrowerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"success":"Successfully created Borrower"}, status=status.HTTP_201_CREATED)
+        data = request.data
+        cbi = data['channel_borrower_uid']
+    
+        borrower = Borrower.objects.filter(channel_borrower_uid=cbi)
+        if borrower:
+            return Response({"error":"Borrower already exists"}, status=status.HTTP_201_CREATED)
         else:
-            context['error'] = "Oops, Field Error"
-            context['description'] = serializer.errors
-            return Response(context, status=status.HTTP_400_BAD_REQUEST)
+            serializer = BorrowerSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"success":"Successfully created Borrower"}, status=status.HTTP_201_CREATED)
+            else:
+                context['error'] = "Oops, Field Error"
+                context['description'] = serializer.errors
+                return Response(context, status=status.HTTP_400_BAD_REQUEST)
         
 
 

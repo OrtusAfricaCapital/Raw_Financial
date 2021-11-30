@@ -12,7 +12,7 @@ def borrower_rand():
 class Borrower(models.Model):
     borrower_id = models.CharField(max_length=20, default=borrower_rand, editable=False, blank=True)
     channel_borrower_uid = models.CharField(max_length=100)
-    tn = models.ForeignKey(TrustNetwork, on_delete=models.CASCADE)
+    tn = models.ForeignKey(TrustNetwork, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=20)
