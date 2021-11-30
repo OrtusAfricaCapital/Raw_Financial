@@ -54,8 +54,13 @@ urlpatterns = [
     path('loans/', include('loans.urls')),
     path('wallet/', include('wallet.urls')),
 
+    path('api/authentication/', include('authentication.api.urls', 'account_api')),
+
     
 ]
+
+handler404 = 'utils_api.views.error_404'
+handler500 = 'utils_api.views.error_500'
 
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

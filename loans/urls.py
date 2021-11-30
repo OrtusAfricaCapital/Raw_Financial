@@ -9,5 +9,6 @@ urlpatterns = [
 
     #api
     path('api/loan_request/',loan_request, name="loan_request"),
+    path('api/loan_status/<str:lr_id>/', loan_status, name='loan_status'),
 ]
 

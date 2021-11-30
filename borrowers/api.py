@@ -12,8 +12,9 @@ from .serializer import *
 from .models import *
 
 @api_view(['GET','POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_all_borrowers(request):
+    context = {}
     if request.method == "GET":
         borrowers = Borrower.objects.all()
         if borrowers:
@@ -27,7 +28,9 @@ def get_all_borrowers(request):
             serializer.save()
             return Response({"success":"Successfully created Borrower"}, status=status.HTTP_201_CREATED)
         else:
-            return Response({"error":"Sorry, SOmething went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+            context['error'] = "Oops, Field Error"
+            context['description'] = serializer.errors
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
         
 
 

@@ -9,10 +9,14 @@ from django.contrib.auth.models import (
     PermissionsMixin, UserManager, AbstractBaseUser)
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models.signals import post_save, post_delete
+from rest_framework.authtoken.models import Token
 #import jwt
 from datetime import datetime, timedelta
 
 from django.conf import settings
+import uuid
 
 
 class MyUserManager(UserManager):
@@ -54,7 +58,8 @@ class MyUserManager(UserManager):
 
 class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     username_validator = UnicodeUsernameValidator()
-
+    uuid = models.UUIDField(default=uuid.uuid4().hex, editable=False, unique=True)
+    full_name = models.CharField(max_length=200, blank=True)
     username = models.CharField(
         _('username'),
         max_length=150,
@@ -66,6 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         },
     )
     email = models.EmailField(_('email address'), blank=False, unique=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -89,6 +95,14 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
 
         ),
     )
+
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
+
+
+
     objects = MyUserManager()
 
     EMAIL_FIELD = 'email'

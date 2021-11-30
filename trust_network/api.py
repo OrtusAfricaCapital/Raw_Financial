@@ -14,7 +14,7 @@ from .serializer import *
 
 
 @api_view(['GET','POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def trustnetwork_apiview(request):
     if request.method == 'GET':
         trust_network = TrustNetwork.objects.all()

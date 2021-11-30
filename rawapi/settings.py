@@ -52,8 +52,41 @@ INSTALLED_APPS = [
     'wallet',
     'bootstrap_modal_forms',
     'numpy',
+    'drf_yasg2',
+    'rest_framework.authtoken'
     
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'authentication.authentication.ExpiringTokenAuthentication',
+
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'EXCEPTION_HANDLER':'utils_api.utils.custom_exception_handler',
+    'DATE_INPUT_FORMATS': ["%m %d,%Y", ]
+    
+
+}
+
+TOKEN_EXPIRED_AFTER_SECONDS = 3600
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Token': {
+            'type': 'basic'
+      },
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
