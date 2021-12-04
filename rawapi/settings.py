@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0=cgbbgmg#2b4m=3i%m@tvllutmk--u$kxglsohntw90c=uay_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['rawfinancial.fund']
 
 
 # Application definition
