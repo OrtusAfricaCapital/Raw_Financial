@@ -23,15 +23,19 @@ def index(request):
     if loans_due_sum == 0 and loans_issued == 0:
 
         npl_percentage = 0
+        pl = 0
+        pl_percentage = 0
 
     else:
         npl_percentage = calculations.percentage_npl_amountlent(loans_due_sum,loans_issued)
+        pl = calculations.pl(loans_issued, amount_paid)
+        pl_percentage = calculations.percentage_pl_amountlent(pl, loans_issued)
 
 
     #pl calculation
-    pl = calculations.pl(loans_issued, amount_paid)
+    
 
-    pl_percentage = calculations.percentage_pl_amountlent(pl, loans_issued)
+    
 
     context = {
         'loans_issued':loans_issued,
