@@ -20,7 +20,13 @@ def index(request):
     amount_paid = Payment.objects.all().aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0.0
 
     #npl percentage
-    npl_percentage = calculations.percentage_npl_amountlent(loans_due_sum,loans_issued)
+    if loans_due_sum == 0 and loans_issued == 0:
+
+        npl_percentage = 0
+
+    else:
+        npl_percentage = calculations.percentage_npl_amountlent(loans_due_sum,loans_issued)
+
 
     #pl calculation
     pl = calculations.pl(loans_issued, amount_paid)
