@@ -139,6 +139,10 @@ DATABASES = {
         'PASSWORD': 'QHpfN2v6ZC_rHt2s',
         'HOST': 'private-ortus-db-do-user-9816964-0.b.db.ondigitalocean.com',
         'PORT': '25060',
+        'OPTIONS':{
+            'sslmode':'verify-full',
+            'sslrootcert':os.path.join(BASE_DIR, 'ca-certificate.crt')
+        }
     }
 }
 
