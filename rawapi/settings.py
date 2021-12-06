@@ -124,23 +124,23 @@ AUTH_USER_MODEL = 'authentication.User'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 #DATABASES = {
     #'default': {
-       # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'NAME': 'rawadmin',
-        #'USER': 'raw-financial',
-        #'PASSWORD': 'QHpfN2v6ZC_rHt2s',
-        #'HOST': 'ortus-db-do-user-9816964-0.b.db.ondigitalocean.com',
-        #'PORT': '25060',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
     #}
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'rawadmin',
+        'USER': 'raw-financial',
+        'PASSWORD': 'QHpfN2v6ZC_rHt2s',
+        'HOST': 'private-ortus-db-do-user-9816964-0.b.db.ondigitalocean.com',
+        'PORT': '25060',
+    }
+}
 
 
 # Password validation
