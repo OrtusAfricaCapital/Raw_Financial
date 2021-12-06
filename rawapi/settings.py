@@ -131,6 +131,17 @@ DATABASES = {
     }
 }
 
+#DATABASES = {
+    #'default': {
+       # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'NAME': 'rawadmin',
+        #'USER': 'raw-financial',
+        #'PASSWORD': 'QHpfN2v6ZC_rHt2s',
+        #'HOST': 'ortus-db-do-user-9816964-0.b.db.ondigitalocean.com',
+        #'PORT': '25060',
+    #}
+#}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
