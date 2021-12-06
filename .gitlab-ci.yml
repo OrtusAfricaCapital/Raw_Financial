@@ -1,0 +1,29 @@
+image: python:3.9
+
+variables:
+  BUILD_IMAGE: registry.gitlab.com/jasiimwe160/rawapi:$CI_COMMIT_SHA
+  DEPLOY_IMAGE: registry.gitlab.com/jasiimwe160/rawapi:$CI_COMMIT_TAG
+stages:
+  - test
+  - build_image
+
+install-deps:
+  stage: test
+  image: python:3.9
+  script:
+  - pip install -r requirements.txt
+
+build_image:
+  stage: build_image
+  image: docker:git
+  services:
+    - docker:19.03.5-dind
+  script:
+    # - docker build -t $BUILD_IMAGE .
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    # - docker push $BUILD_IMAGE
+    - docker build -t registry.gitlab.com/jasiimwe160/rawapi:rawapi-v1 $CI_PROJECT_DIR
+    - docker push registry.gitlab.com/jasiimwe160/rawapi:rawapi-v1
+  only:
+    - main
+  
