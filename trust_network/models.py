@@ -10,6 +10,11 @@ REQUIRES_APPROVAL = (
     ("no","no"),
 )
 
+ACTIVE_STATUS = (
+    ('yes','yes'),
+    ('no','no'),
+)
+
 def tn_rand():
     rand = random.randint(1000,9000)
     return "TN-"+str(rand)
@@ -32,5 +37,14 @@ class TrustNetwork(models.Model):
 
     def __str__(self):
         return self.Name
+
+class TrustNetworkStatus(models.Model):
+    tn_id = models.ForeignKey(TrustNetwork, on_delete=models.CASCADE, null=True, blank=True)
+    active_status = models.CharField(max_length=100, choices=ACTIVE_STATUS, default='yes')
+    created_at = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return str(self.tn_id)
+
 
 

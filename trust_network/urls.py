@@ -9,4 +9,5 @@ urlpatterns = [
 
     #api urls
     path('api/trust_network/', trustnetwork_apiview, name='trust_network'),
+    path('api/trustnetwork_status/<str:tn_id>/', trust_status, name='trustnetwork_status'),
 ]
