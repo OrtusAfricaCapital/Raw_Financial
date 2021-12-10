@@ -2,6 +2,7 @@ from django.db import models
 from helpers.models import TrackingModel
 from authentication.models import User
 from channel.models import Channel
+import random
 
 # Create your models here.
 REQUIRES_APPROVAL = (
@@ -9,9 +10,12 @@ REQUIRES_APPROVAL = (
     ("no","no"),
 )
 
-
+def tn_rand():
+    rand = random.randint(1000,9000)
+    return "TN-"+str(rand)
 
 class TrustNetwork(models.Model):
+    trustnetwork_uid = models.CharField(max_length=100, default=tn_rand)
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     Name = models.CharField(max_length=250)
     InstitutionalLimit = models.DecimalField(max_digits=13, decimal_places=4, null=True, blank=True)

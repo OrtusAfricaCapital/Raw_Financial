@@ -24,9 +24,14 @@ def trustnetwork_apiview(request):
         else:
             return Response({"error":"No trust networks"}, status=status.HTTP_404_NOT_FOUND)
     elif request.method == 'POST':
+        context = {}
         serializer = TrustNetworkSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"success":"Successfully created Trust Network"}, status=status.HTTP_201_CREATED)
+            
+            
+            context['success'] = "Successfully created Trust Network"
+            
+            return Response(context, status=status.HTTP_201_CREATED)
         else:
             return Response({"error":"Sorry, SOmething went wrong"}, status=status.HTTP_400_BAD_REQUEST)
