@@ -47,6 +47,7 @@ def trustnetwork_apiview(request):
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def trust_status(request, tn_id):
+    context = {}
     if request.method == 'GET':
         try:
             tn_request = TrustNetwork.objects.get(trustnetwork_uid=tn_id)
@@ -57,7 +58,10 @@ def trust_status(request, tn_id):
                 tn_status = TrustNetworkStatus.objects.get(tn_id=tn_request.id)
                 if tn_status:
                     serializer = TrustNetworkStatusSerializer(tn_status)
-                    return Response(serializer.data)
+                    tn_serializer = TrustNetworkSerializer(tn_request)
+                    context['trust_network_status'] = serializer.data
+                    context['trust_network'] = tn_serializer.data
+                    return Response(context)
                 else:
                     return Response({"error":"No status Change"}, status=status.HTTP_400_BAD_REQUEST)
             except TrustNetworkStatus.DoesNotExist:
