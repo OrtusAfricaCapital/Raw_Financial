@@ -59,7 +59,7 @@ class LoanRequest(models.Model):
 
 class LoanRequestStatus(models.Model):
     loan_id = models.ForeignKey(LoanRequest, related_name="loan_request", on_delete=models.CASCADE)
-    loan_status = models.CharField(max_length=50, choices=LOAN_STATUS, default=1)
+    loan_status = models.CharField(max_length=50, choices=LOAN_STATUS, default="receieved")
     loan_status_description = models.TextField()
     created_at = models.DateField(auto_now=True)
 
