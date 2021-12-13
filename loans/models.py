@@ -17,7 +17,7 @@ LOAN_STATUS = (
     ('received', 'received'),
     ('pending', 'pending'),
     ('approved','approved'),
-    ('disapproved','disapproved')
+    ('rejected','rejected'),
     
 )
 
