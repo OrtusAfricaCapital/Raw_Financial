@@ -31,7 +31,7 @@ def trustnetwork_apiview(request):
         if get_tn:
             return Response({"error":"Sorry, Trust Network already exists"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            serializer = TrustNetworkSerializer(data)
+            serializer = TrustNetworkSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 uid = serializer.data.get('trustnetwork_uid', None)
