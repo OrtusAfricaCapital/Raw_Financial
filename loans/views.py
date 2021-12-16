@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
@@ -83,3 +84,38 @@ def get_loan_requests(request):
         'loan_request':get_loan_request
     }
     return render(request, 'loans/loan_requests.html', context)
+
+def loan_request_details(request, uid):
+    try:
+        get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
+        borrower = Borrower.objects.get(channel_borrower_uid=get_loan_request.channel_borrower_uid)
+        loan_borrowed = Loans.objects.filter(borrower=borrower.id)
+        context = {
+            'loan_request':get_loan_request,
+            'loan_borrowed':loan_borrowed
+        }
+        return render(request, 'loans/loan_request_details.html', context)
+    except LoanRequest.DoesNotExist:
+        pass
+
+def give_loan(request, uid):
+    try:
+        get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
+        loan_borrowed = Borrower.objects.get(channel_borrower_uid=get_loan_request.channel_borrower_uid)
+
+        lr = Loans.objects.create(
+            borrower = loan_borrowed,
+            principal_amount = get_loan_request.loan_amount,
+            loan_release_date = datetime.now(),
+            interest_rate = 10,
+            loan_duration = get_loan_request.loan_duration
+        )
+        context = {
+            'loan_request':get_loan_request,
+            'loan_borrowed':loan_borrowed
+        }
+        messages.success(request, "Loan issued"),
+        return render(request, 'loans/loan_request_details.html', context)
+    except LoanRequest.DoesNotExist:
+        pass
+

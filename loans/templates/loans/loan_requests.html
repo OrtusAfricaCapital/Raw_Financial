@@ -84,14 +84,14 @@
                 <tr>
                   <td>{{ lr.loan_request_uid }}</td>
                   <td>{{ lr.channel_borrower_uid }}</td>
-                  <td>{{ lr.channel_id.Name }}</td>
+                  <td>{{ lr.channel_id }}</td>
                   <td>{{ lr.loan_amount }}</td>
                   <td>{{ lr.loan_purpose }}</td>
                   <td>{{ lr.loan_duration }}</td>
                   <td>{{ lr.loan_request_date }}</td>
                   
                     <td class="project-actions text-center">
-                          <a class="btn btn-primary btn-sm" href="{% url 'loan_requests' id=lr.pk %}" class="btn btn-primary">
+                          <a class="btn btn-primary btn-sm" href="{% url 'loan_request_detail' uid=lr.loan_request_uid %}" class="btn btn-primary">
                               <i class="fas fa-folder">
                               </i>
                               View
