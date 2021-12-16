@@ -78,7 +78,62 @@
               <form role="form" method="post" enctype="multipart/form-data"> {% csrf_token %}
                 
                 <div class="card-body">
-                  {{ tn_form|crispy }}
+                  <div class="form-group">
+                    <label>Channel</label>
+                    {{tn_form.channel }}
+                  </div>
+                  <div class="form-group">
+                    <label>Channel Name</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="Name" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Institutional Limit</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="InstitutionalLimit" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Revolving Limit</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="RevolvingLimit" value="">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Monthly Interest Rate</label>
+                    <input type="text" class="form-control" placeholder="" id="monthly_rate"
+                    name="MonthlyInterestRate" onkeyup="calculate_interest()">
+                  </div>
+                  <div class="form-group">
+                    <label>Daily Interest Rate</label>
+                    <input type="text" class="form-control" placeholder="" 
+                     id="daily_rate"  name="DailyInterestRate" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Logo</label>
+                    <input type="file" class="form-control" placeholder="" 
+                    name="Logo" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Trust Network Category</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="TrustNetworkCategory" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Requires Approval</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="RequiresApproval" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Required Approval</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="RequiredApproval" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Trust Network Domains</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="Domains" value="">
+                  </div>
+                  
                 </div>
                 
 
@@ -157,5 +212,21 @@ $(document).ready(function () {
   bsCustomFileInput.init();
 });
 </script>
+
+<script>
+  function calculate_interest(){
+    var monthly_rate = parseInt(document.getElementById("monthly_rate").value);
+
+    if(monthly_rate === "" || isNaN(monthly_rate)) monthly_rate = 0;
+    document.getElementById("daily_rate").value = (monthly_rate / 30);
+        
+  }
+
+  function myFunction() {
+  var x = document.getElementById("monthly_rate");
+  x.value = x.value.toUpperCase();
+}
+</script>
+
 </body>
 </html>

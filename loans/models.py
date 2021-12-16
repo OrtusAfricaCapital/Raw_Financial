@@ -35,10 +35,19 @@ class Loans(models.Model):
     borrower = models.ForeignKey(Borrower, on_delete=models.CASCADE)
     #disbursed_by = models.CharField(max_length=100, choices=DISBURSED_BY)
     principal_amount = models.IntegerField()
-    loan_release_date = models.DateTimeField()
+    loan_release_date = models.DateField()
     interest_rate = models.FloatField()
     loan_duration = models.IntegerField()
-    
+    loan_due_date = models.DateField(editable=False)
+
+
+    def save(self):
+        from datetime import datetime, timedelta
+        d = timedelta(days=self.loan_duration)
+
+        if not self.id:
+            self.loan_due_date = self.loan_release_date + d
+            super(Loans, self).save()
 
     def __str__(self):
         return self.loan_product

@@ -15,8 +15,8 @@ def index(request):
     transaction = WalletTransactions.objects.all().order_by('-transacted_on')[:5]
     balance = WalletTransactions.objects.aggregate(Sum('amount'))['amount__sum'] or 0.0
     loans_issued = Loans.objects.all().aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
-    loans_due_sum = Loans.objects.filter(loan_release_date__gt=datetime.now()-timedelta(days=30)).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
-    loans_due = Loans.objects.filter(loan_release_date__gt=datetime.now()-timedelta(days=30)).count()
+    loans_due_sum = Loans.objects.filter(loan_release_date__lt=datetime.now()).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+    loans_due = Loans.objects.filter(loan_due_date__lt=datetime.now()).count()
     amount_paid = Payment.objects.all().aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0.0
 
     #npl percentage

@@ -14,7 +14,9 @@ def create_tn_view(request):
     if request.method == 'POST':
         tn_form = TrustNetworkForm(request.POST)
         if tn_form.is_valid():
-            tn_form.save()
+            tn = tn_form.save(commit=False)
+            tn.CreatedBy = request.user
+            tn.save()
             messages.success(request, "Successfully created Trust Network")
             return redirect('show_trustnetwork')
         else:

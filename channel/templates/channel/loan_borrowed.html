@@ -103,6 +103,7 @@
               <th>Interest Rate</th>
               <th>Loan Date</th>
               <th>Loan Duration</th>
+              <th>Loan Due Date</th>
               <th>Action</th>
               
             </tr>
@@ -117,6 +118,7 @@
               <td>{{ fi.interest_rate }}</td>
               <td>{{ fi.loan_release_date }}</td>
               <td>{{ fi.loan_duration }}</td>
+              <td>{{ fi.loan_due_date }}</td>
               
                 <td class="project-actions text-center">
                       <a class="btn btn-primary btn-sm" href="{% url 'payment' id=fi.id %}" class="btn btn-primary">
@@ -145,6 +147,7 @@
               <th>Interest Rate</th>
               <th>Loan Date</th>
               <th>Loan Duration</th>
+              <th>Loan Due Date</th>
               <th>Action</th>
             </tr>
             </tfoot>

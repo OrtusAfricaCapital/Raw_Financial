@@ -76,3 +76,10 @@ def payment_view(request):
     else:
         context = {'form':payment_form}
         return render(request, 'loans/create_payment.html', context)
+
+def get_loan_requests(request):
+    get_loan_request = LoanRequest.objects.all()
+    context = {
+        'loan_request':get_loan_request
+    }
+    return render(request, 'loans/loan_requests.html', context)

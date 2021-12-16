@@ -43,8 +43,16 @@ def loan_request(request):
         except Borrower.DoesNotExist:
             return Response({"error":"Borrower ID not recorgnized"}, status=status.HTTP_400_BAD_REQUEST)
 
+    elif request.method == 'GET':
+        get_loan_request = LoanRequest.objects.all()
+        if get_loan_request:
+            serializer = LoanRequestSerializer(get_loan_request, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"error":"no loan requests"}, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET','POST'])
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def loan_status(request, lr_id):
     if request.method == 'GET':
