@@ -103,13 +103,8 @@ def give_loan(request, uid):
         get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
         loan_borrowed = Borrower.objects.get(channel_borrower_uid=get_loan_request.channel_borrower_uid)
 
-        lr = Loans.objects.create(
-            borrower = loan_borrowed,
-            principal_amount = get_loan_request.loan_amount,
-            loan_release_date = datetime.now(),
-            interest_rate = 10,
-            loan_duration = get_loan_request.loan_duration
-        )
+        LoanRequestStatus.objects.filter(loan_id=get_loan_request.id).update(loan_status="approved", loan_status_description="Loan has been approved")
+        
         context = {
             'loan_request':get_loan_request,
             'loan_borrowed':loan_borrowed
@@ -119,3 +114,46 @@ def give_loan(request, uid):
     except LoanRequest.DoesNotExist:
         pass
 
+def loan_scoring(request, uid):
+    context = {}
+    try:
+        get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
+        channel_borrower_id = get_loan_request.channel_borrower_uid
+        #check loan status
+        borrower = Borrower.objects.get(channel_borrower_uid=channel_borrower_id)
+        loan_borrowed = Loans.objects.filter(borrower=borrower.id, loan_status="Running")
+        tn = TrustNetwork.objects.get(id=borrower.tn.id)
+        
+        if loan_borrowed:
+            context = {
+                'status':False,
+                'loan_request':get_loan_request
+            }
+            messages.error(request, "Loan Scoring Failed. The Borrower has a Running Loan")
+            return render(request, 'loans/loan_request_details.html', context)
+
+        else:
+            if get_loan_request.loan_amount > tn.InstitutionalLimit:
+                context = {
+                    'status':False,
+                    'loan_request':get_loan_request
+                }
+                messages.error(request, "Loan Scoring Failed. The Institutional Limit has been exceeded")
+                return render(request, 'loans/loan_request_details.html', context)
+            else:
+                #issue Loan and change status for Loan Request
+                #LoanRequestStatus.objects.filter(loan_id=get_loan_request.id).update(loan_status="approved", loan_status_description="Loan has been approved")
+                context = {
+                    'status':True,
+                    'loan_request':get_loan_request
+                }
+                messages.success(request, "Passed Loan Scoring")
+                return render(request, 'loans/loan_request_details.html', context)
+        
+                
+        #messages.warning(request, "Still has existing Loan"),
+            
+
+    except LoanRequest.DoesNotExist:
+        context['loan_request'] = get_loan_request
+        return render(request, 'loans/loan_request_details.html', context)

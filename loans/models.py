@@ -3,6 +3,7 @@ from django.db.models.constraints import BaseConstraint
 from django.db.models.enums import Choices
 from borrowers.models import * 
 import random
+import uuid
 # Create your models here.
 LOAN_PRODUCT = (
     ('Business Loan', 'Business Loan'),
@@ -13,12 +14,20 @@ DISBURSED_BY = (
     ('Cheque', 'Cheque'),
 )
 
-LOAN_STATUS = (
+LOAN_REQUEST_STATUS = (
     ('received', 'received'),
     ('pending', 'pending'),
     ('approved','approved'),
     ('rejected','rejected'),
     
+)
+
+LOAN_STATUS = (
+   
+    ('Issued', 'Issued'),
+    ('Running', 'Running'),
+    ('Paid','Paid'),
+    ('Defaulted', 'Defaulted'),
 )
 
 def loan_rand():
@@ -31,6 +40,7 @@ def payment_rand():
 
 
 class Loans(models.Model):
+    loan_uid = models.UUIDField(default=uuid.uuid4, editable=False)
     #loan_product = models.CharField(max_length=100, choices=LOAN_PRODUCT)
     borrower = models.ForeignKey(Borrower, on_delete=models.CASCADE)
     #disbursed_by = models.CharField(max_length=100, choices=DISBURSED_BY)
@@ -39,6 +49,7 @@ class Loans(models.Model):
     interest_rate = models.FloatField()
     loan_duration = models.IntegerField()
     loan_due_date = models.DateField(editable=False)
+    loan_status = models.CharField(max_length=100, choices=LOAN_STATUS, default="Running")
 
 
     def save(self):
@@ -50,7 +61,7 @@ class Loans(models.Model):
             super(Loans, self).save()
 
     def __str__(self):
-        return self.loan_product
+        return str(self.loan_uid)
 
 
 class LoanRequest(models.Model):
@@ -68,7 +79,7 @@ class LoanRequest(models.Model):
 
 class LoanRequestStatus(models.Model):
     loan_id = models.ForeignKey(LoanRequest, related_name="loan_request", on_delete=models.CASCADE)
-    loan_status = models.CharField(max_length=50, choices=LOAN_STATUS, default="received")
+    loan_status = models.CharField(max_length=50, choices=LOAN_REQUEST_STATUS, default="received")
     loan_status_description = models.TextField()
     created_at = models.DateField(auto_now=True)
 

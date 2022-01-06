@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> RF | INVESTOR DETAILS</title>
+  <title> RF | LOAN DETAILS</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -97,7 +97,7 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">Show Loans</h3>
-          <a class="btn btn-info float-right" style="color: white;" href="{% url 'create_loan' %}">Give Loan</a>
+          <!--<a class="btn btn-info float-right" style="color: white;" href="">Give Loan</a>-->
           <!--show messages-->
         </div>
         <!-- Modal -->
@@ -116,6 +116,7 @@
               <th>Loan Date</th>
               <th>Loan Duration</th>
               <th>Loan Due Date</th>
+              <th>Loan Status</th>
               
             </tr>
             </thead>
@@ -129,6 +130,7 @@
               <td>{{ loan_borrower.loan_release_date }}</td>
               <td>{{ loan_borrower.loan_duration }}</td>
               <td>{{ loan_borrower.loan_due_date }}</td>
+              <td>{{ loan_borrower.loan_status }}</td>
             </tr>
             
             </tbody>
@@ -141,6 +143,7 @@
               <th>Loan Date</th>
               <th>Loan Duration</th>
               <th>Loan Due Date</th>
+              <th>Loan Status</th>
             </tr>
             </tfoot>
           </table>
