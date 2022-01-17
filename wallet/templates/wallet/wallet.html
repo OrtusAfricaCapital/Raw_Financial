@@ -103,8 +103,8 @@
         <a class="btn btn-warning" href="#" >Add Channel</a>
       </div>-->
      </div>
-     <div class="row col-md-12">
-       <!--withdraw form-->
+     <!--<div class="row col-md-12">
+       <!--withdraw form--
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
@@ -129,8 +129,8 @@
                    <p>{{df_form.non_field_errors}}</p>
                </div>
            {% endif %}
-             <!-- /.card-header -->
-             <!-- form start -->
+             <!-- /.card-header --
+             <!-- form start --
              <form role="form" method="post" action="{% url 'deposit' %}"> {% csrf_token %}
                
                <div class="card-body">
@@ -140,7 +140,7 @@
    
                  
                  
-               <!-- /.card-body -->
+               <!-- /.card-body --
    
                <div class="card-footer">
                  <button type="submit" class="btn btn-primary" >Deposit Funds</button>
@@ -150,10 +150,10 @@
            
           </div>
         </div>
-      </div>
+      </div>-->
       <!--close withdraw form-->
       <!--deposit form-->
-      <div class="col-md-6">
+      <!--<div class="col-md-6">
         <div class="card">
           <div class="card-body">
            <div class="card card-danger">
@@ -177,8 +177,8 @@
                    <p>{{wf_form.non_field_errors}}</p>
                </div>
            {% endif %}
-             <!-- /.card-header -->
-             <!-- form start -->
+             <!-- /.card-header --
+             <!-- form start --
              <form role="form" method="post" action="{% url 'withdraw' %}"> {% csrf_token %}
                
                <div class="card-body">
@@ -188,7 +188,7 @@
    
                  
                  
-               <!-- /.card-body -->
+               <!-- /.card-body --
    
                <div class="card-footer">
                  <button type="submit" class="btn btn-danger" >Withdraw</button>
@@ -200,8 +200,8 @@
         </div>
         
       </div>
-      <!--close deposit form-->
-     </div>
+      <!--close deposit form--
+     </div>-->
      
 
      
@@ -215,9 +215,11 @@
                <table id="example1" class="table table-bordered table-striped">
                  <thead>
                  <tr>
-                   <th>Type</th>
+                  <th>Loan ID</th>
+                  <th>Transaction ID</th>  
+                  <th>Type</th>
                    <th>Amount</th>
-                   <th>Party</th>
+                  
                    <th>When</th>
                  </tr>
                  </thead>
@@ -225,23 +227,25 @@
                     
                      {% for fi in transactions %}
                      <tr>
+                       <td><a href="#">{{fi.loan_id}}</a></td>
+                       <td><a href="#">{{fi.transaction_id}}</a></td>
                        {% if fi.transaction_type == "Deposit" %}
                         <td style="color: green;">{{ fi.transaction_type}}</td>
                        {% else %}
                        <td style="color: red;">{{ fi.transaction_type}}</td>
                        {% endif %}
-                       <td>{{ fi.amount}}</td>
-                       <td>{{ fi.party }}</td>
-                       <td>{{ fi.transacted_on }}</td>
+                       <td>{{ fi.loan_id.principal_amount}}</td>
+                       <td>{{ fi.transaction_created_on }}</td>
                       
                      </tr>
                      {% endfor %}
                  </tbody>
                  <tfoot>
                  <tr>
+                  <th>Loan ID</th>
+                  <th>Transaction ID</th>  
                   <th>Type</th>
                    <th>Amount</th>
-                   <th>Party</th>
                    <th>When</th>
                  </tr>
                  </tfoot>

@@ -1,0 +1,12 @@
+
+<form method="post"> {% csrf_token %}
+    <button type="submit">Login In</button>
+</form>
+
+<!--<a href="{%url 'login_sandbox' %}">login</a>-->
+
+{% if message %}
+    <h1>{{message}}</h1>
+    <p>{{token}}</p>
+{%endif%}
+<p>Mind if i go change</p>

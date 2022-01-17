@@ -79,7 +79,7 @@ def loan_details(request, id):
 
 
 def make_payment(request, id):
-    loan = Loans.objects.filter(borrower=id)[0]
+    loan = Loans.objects.get(borrower=id)
     context = {}
     payment_form = PaymentForm()
     if request.method == 'POST':

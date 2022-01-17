@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(WalletWithdraw)
 admin.site.register(WalletDeposit)
 admin.site.register(WalletTransactions)
+admin.site.register(LoanTransactions)

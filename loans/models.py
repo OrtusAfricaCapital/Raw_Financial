@@ -52,7 +52,7 @@ class Loans(models.Model):
     loan_status = models.CharField(max_length=100, choices=LOAN_STATUS, default="Running")
 
 
-    def save(self):
+    def save(self, *args, **kwargs):
         from datetime import datetime, timedelta
         d = timedelta(days=self.loan_duration)
 

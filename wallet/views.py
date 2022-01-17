@@ -3,11 +3,34 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
+
+from rawapi.settings import XENTE_TOKEN
 from .forms import *
 from .models import *
 from django.db.models import Sum
 
 from django.urls import reverse_lazy
+import requests
+from django.conf import settings
+import json
+import uuid
+import datetime
+from datetime import timezone
+import os
+from utils import xente_login
+
+
+header_api_key = settings.XENTE_API_KEY
+header_date = str(datetime.datetime.now(timezone.utc))
+header_correlation_id = 'uuid.uuid4()'
+header_content_type = 'application/json'
+header_token = str(os.environ.get('XENTE_TOKEN'))
+
+headers={'X-ApiAuth-ApiKey':header_api_key, 
+    'X-Date':header_date, 
+    'X-Correlation-ID':header_correlation_id,
+    'Authorization': "Bearer "+header_token, 
+    'Content-Type':header_content_type}
 
 
 # Create your views here.
@@ -15,7 +38,7 @@ from django.urls import reverse_lazy
 def show_wallet(request):
     df = DepositForm()
     wf = WithdrawForm()
-    transactions = WalletTransactions.objects.all()
+    transactions = LoanTransactions.objects.all()
     wallet_sum = WalletTransactions.objects.aggregate(Sum('amount'))['amount__sum'] or 0.0
     context = {
         'df_form':df,
@@ -74,3 +97,25 @@ def withdraw_view(request):
 class Transaction(ListView):
     model = WalletDeposit
     template_name = 'wallet/wallet.html'
+
+
+def login_sandbox_api(request):
+    
+    response = xente_login.get_token(settings.XENTE_API_KEY, settings.XENTE_PASSWORD)
+    print(response)
+    context = {
+           
+            "message":response,
+            "token":os.environ.get('XENTE_TOKEN')
+        }
+    
+    return render(request, 'wallet/xente_sandbox.html', context)
+    
+
+def create_transaction(request):
+    pass
+
+
+    
+
+    

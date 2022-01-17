@@ -16,3 +16,5 @@ class WithdrawForm(forms.ModelForm):
         fields = ('channel','amount')
 
 
+
+
