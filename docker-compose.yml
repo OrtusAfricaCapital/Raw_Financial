@@ -2,7 +2,14 @@ version: '3'
 
 services:
   web:
-    image: registry.gitlab.com/jasiimwe160/rawapi:rawapi-v1
+    build: ./
+    environment:
+      - SECRET_KEY=secret
+      - XENTE_API_KEY=D9AA78AF0DC34DD68DADCC048F54DE48
+      - ACCOUNT_ID=25678500001_PAYMENT_COLLECTION
+      - XENTE_PASSWORD=XentE@Test1234
+      - XENTE_TOKEN=ndb6dam0qrpb3hy5
+      - XENTE_API_KEY_RESELLER=11B0199BA7F14827BC3247097002A57D
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
