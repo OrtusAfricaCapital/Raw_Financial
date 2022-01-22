@@ -46,5 +46,6 @@ def index(request):
         'npl_percent':npl_percentage,
         'pl':pl,
         'pl_percent':pl_percentage,
+        'amount_paid':amount_paid
     }
     return render(request, 'dashboard/home.html', context)

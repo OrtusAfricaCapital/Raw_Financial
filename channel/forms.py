@@ -8,7 +8,7 @@ class ChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
         fields = ('ChannelName','Logo','WebHook','EmailAddress','PhoneNumber',
-        'ShortDescription','LongDescription','DeactivatedOn','ApiKey')
+        'ShortDescription','LongDescription')
 
 class WithdrawForm(forms.ModelForm):
     class Meta:

@@ -1,3 +1,4 @@
+from code import interact
 from wallet.forms import DepositForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, View
@@ -9,6 +10,7 @@ from trust_network.models import *
 from borrowers.models import *
 from loans.models import *
 from loans.forms import *
+from utils import calculations
 
 # Create your views here.
 class ChannelView(ListView):
@@ -32,11 +34,27 @@ def channel_view(request):
         return render(request, 'channel/create_channel.html', context={'channel_form':channel_form})
 
 def channel_details(request, id):
+    total_loan_amount = 0
     channel_details = get_object_or_404(Channel, pk=id)
     trustnetwork_channel = TrustNetwork.objects.filter(channel=id)
+    for tn in trustnetwork_channel:
+        borrower = Borrower.objects.filter(tn=tn)
+        
+        
+        for b in borrower:
+            loan_amount = Loans.objects.filter(borrower=b).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+            total_loan_amount = total_loan_amount + loan_amount 
+        
+    
+    intrest_rate = calculations.calculate_intrest(total_loan_amount, 10)
+    total_amount = total_loan_amount + intrest_rate
+
     context = {
         'tn_channel':trustnetwork_channel,
         'channel_details':channel_details,
+        'total_loan_amount': total_loan_amount,
+        'channel_interest_amount':intrest_rate,
+        'total_amount': total_loan_amount + intrest_rate
     }
     return render(request, 'channel/channel_details.html', context)
     

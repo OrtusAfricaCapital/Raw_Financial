@@ -212,9 +212,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 XENTE_API_KEY = config('XENTE_API_KEY', default='')
 
+XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER', default='')
+
 ACCOUNT_ID = config('ACCOUNT_ID', default='')
 
-XENTE_BASE_URL="http://sandbox666353.westeurope.cloudapp.azure.com:9080"
+XENTE_BASE_URL_PAYMENT="http://sandbox666353.westeurope.cloudapp.azure.com:9080"
+
+XENTE_BASE_URL_RESELLER="http://sandbox666353.westeurope.cloudapp.azure.com:8067"
+
+
 
 XENTE_PASSWORD=config('XENTE_PASSWORD', default='')
 

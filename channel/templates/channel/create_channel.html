@@ -78,7 +78,39 @@
               <form role="form" method="post" enctype="multipart/form-data"> {% csrf_token %}
                 
                 <div class="card-body">
-                  {{ channel_form|crispy }}
+                  <div class="form-group">
+                    <label>Channel Name</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="ChannelName" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Logo</label>
+                    <input type="file" class="form-control" placeholder="" 
+                    name="Logo" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Web Hook</label>
+                    <input type="text" class="form-control" placeholder="" 
+                    name="WebHook" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" placeholder="" 
+                    name="EmailAddress" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" class="form-control" placeholder="" 
+                    name="PhoneNumber" value="">
+                  </div>
+                  <div class="form-group">
+                    <label>ShortDescription</label>
+                    <textarea class="form-control" name="ShortDescription" id="ShortDescription" cols="20" rows="5"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Long Description</label>
+                    <textarea class="form-control" name="LongDescription" id="LongDescription" cols="30" rows="10"></textarea>
+                  </div>
                 </div>
                 
 
