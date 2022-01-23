@@ -74,12 +74,15 @@ def show_borrowers_in_network(request, id):
 
 def loan_borrower(request, id):
     loan_borrowed = Loans.objects.filter(borrower=id)
+    borrower = Borrower.objects.get(id=id)
     principal_sum = Loans.objects.filter(borrower=id).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
-
+    interest = calculations.calculate_intrest(principal_sum, borrower.tn.MonthlyInterestRate)
 
     context = {
         'loan_borrower':loan_borrowed,
         'total_borrowed': principal_sum,
+        'interest':interest,
+        'total_amount': principal_sum + interest,
         'id':id
     }
     return render(request, 'channel/loan_borrowed.html', context)

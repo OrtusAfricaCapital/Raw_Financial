@@ -37,11 +37,13 @@ class LoanView(ListView):
 def create_loan_view(request, id):
     try:
         borrower = Borrower.objects.get(id=id)
+        tn = TrustNetwork.objects.get(id=borrower.tn.id)
         if request.method == 'POST':
             loan_form = LoanForm(request.POST or None)
             if loan_form.is_valid():
                 lf = loan_form.save(commit=False)
                 lf.borrower = borrower
+                lf.interest_rate = tn.MonthlyInterestRate
                 loan_form.save()
                 messages.success(request, "Loan Created successfully")
                 return redirect('loan_borrowed', id=id)
@@ -51,7 +53,11 @@ def create_loan_view(request, id):
                 return redirect('create_loan', id=id)
         else:
             loan_form = LoanForm()
-            return render(request, 'loans/create_loan.html', context={'loan_form':loan_form})
+            context = {
+                'loan_form':loan_form,
+                'borrower':borrower
+            }
+            return render(request, 'loans/create_loan.html', context)
     except Borrower.DoesNotExist:
         return redirect('loan_borrowed', id=id)
 
