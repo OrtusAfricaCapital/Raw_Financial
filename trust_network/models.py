@@ -32,7 +32,8 @@ class TrustNetwork(models.Model):
     CreatedBy = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     TrustNetworkCategory = models.CharField(max_length=32, blank=True, null=True)
     RequiresApproval = models.CharField(max_length=10, choices=REQUIRES_APPROVAL, null=True, blank=True)
-    RequiredApproval = models.CharField(max_length=32, blank=True, null=True)
+    
+    RequiredApproval = models.ForeignKey(User, on_delete=models.CASCADE, related_name='required_approval', blank=True, null=True)
     Domains = models.TextField(blank=True, null=True)
 
     def __str__(self):

@@ -87,17 +87,17 @@
                   <td>{{ tn.DailyInterestRate }}</td>
                   <td>{{ tn.MonthlyInterestRate }}</td>
                     <td class="project-actions text-center">
-                          <a class="btn btn-primary btn-sm" href="#" class="btn btn-primary">
+                          <a class="btn btn-primary btn-sm" href="{% url 'trust_network_details' id=tn.id %}" class="btn btn-primary">
                               <i class="fas fa-folder">
                               </i>
                               View
                           </a>
-                          <a class="btn btn-info btn-sm" href="#">
+                          <a class="btn btn-info btn-sm" href="{% url 'edit_trustnetwork' id=tn.id %}">
                               <i class="fas fa-pencil-alt">
                               </i>
                               Edit
                           </a>
-                          <a class="btn btn-danger btn-sm" href="#">
+                          <a class="btn btn-danger btn-sm" href="{% url 'delete_trust_network' id=tn.id %}">
                               <i class="fas fa-trash">
                               </i>
                               Delete

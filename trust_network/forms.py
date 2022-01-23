@@ -5,6 +5,8 @@ from channel.models import Channel
 
 class TrustNetworkForm(forms.ModelForm):
     
+    
+    
     class Meta:
         model = TrustNetwork
         fields = ('channel','Name','InstitutionalLimit','RevolvingLimit','DailyInterestRate',

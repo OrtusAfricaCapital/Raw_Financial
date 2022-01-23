@@ -82,40 +82,40 @@
                     <label>Channel</label>
                     <select class="form-control" name="channel">
                       {% for value, name in tn_form.fields.channel.choices %}
-                          <option value="{{ value }}">{{ name }}</option>
+                          <option value="{{ value }}"{% if tn_form.channel.value == value %} selected="selected"{% endif %}>{{ name }}</option>
                       {% endfor %}   
                     </select>
                   </div>
                   <div class="form-group">
                     <label>Trust Network Name</label>
                     <input type="text" class="form-control" placeholder="" 
-                    name="Name" value="">
+                    name="Name" value="{{tn_form.Name.value}}">
                   </div>
                   <div class="form-group">
                     <label>Institutional Limit</label>
                     <input type="text" class="form-control" placeholder="" 
-                    name="InstitutionalLimit" value="">
+                    name="InstitutionalLimit" value="{{tn_form.InstitutionalLimit.value}}">
                   </div>
                   <div class="form-group">
                     <label>Revolving Limit</label>
                     <input type="text" class="form-control" placeholder="" 
-                    name="RevolvingLimit" value="">
+                    name="RevolvingLimit" value="{{tn_form.RevolvingLimit.value}}">
                   </div>
                   
                   <div class="form-group">
                     <label>Monthly Interest Rate</label>
                     <input type="text" class="form-control" placeholder="" id="monthly_rate"
-                    name="MonthlyInterestRate" onkeyup="calculate_interest()">
+                    name="MonthlyInterestRate" onkeyup="calculate_interest()" value="{{tn_form.MonthlyInterestRate.value}}">
                   </div>
                   <div class="form-group">
                     <label>Daily Interest Rate</label>
                     <input type="text" class="form-control" placeholder="" 
-                     id="daily_rate"  name="DailyInterestRate" value="">
+                     id="daily_rate"  name="DailyInterestRate" value="{{tn_form.DailyInterestRate.value}}">
                   </div>
                   <div class="form-group">
                     <label>Logo</label>
                     <input type="file" class="form-control" placeholder="" 
-                    name="Logo" value="">
+                    name="Logo" value="{{tn_form.Logo.url}}">
                   </div>
                   <div class="form-group">
                     <label>Trust Network Category</label>
@@ -126,7 +126,7 @@
                     <label>Requires Approval</label>
                     <select class="form-control" name="RequiresApproval">
                       {% for value, name in tn_form.fields.RequiresApproval.choices %}
-                          <option value="{{ value }}">{{ name }}</option>
+                          <option value="{{ value }}"{% if tn_form.RequiresApproval.value == value %} selected="selected"{% endif %}>{{ name }}</option>
                       {% endfor %}   
                     </select>
                   </div>
@@ -134,13 +134,13 @@
                     <label>Required Approval</label>
                     <select class="form-control" name="RequiredApproval">
                       {% for value, name in tn_form.fields.RequiredApproval.choices %}
-                          <option value="{{ value }}">{{ name }}</option>
+                          <option value="{{ value }}"{% if tn_form.RequiredApproval.value == value %} selected="selected"{% endif %}>{{ name }}</option>
                       {% endfor %}   
                     </select>
                   <div class="form-group">
                     <label>Trust Network Domains</label>
                     <input type="text" class="form-control" placeholder="" 
-                    name="Domains" value="">
+                    name="Domains" value="{{tn_form.Domains.value}}">
                   </div>
                   
                 </div>
