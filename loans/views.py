@@ -88,114 +88,98 @@ def payment_view(request, loan_uuid):
     principal_sum = Loans.objects.filter(loan_uid=loan_uuid).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
     #disburse the credit through xente
     
-    xente_login.get_token(constants.api_key, constants.api_password)
-    response = xente_payment_MTN.create_payment_MTN(get_loan.principal_amount, get_loan.borrower.phone_number, get_loan.borrower.phone_number, get_loan.borrower.email, get_loan.borrower.phone_number)
-    
-
-    """
-    url = "http://sandbox666353.westeurope.cloudapp.azure.com:9080/api/v1/transactions"
-
-    request_id = str(uuid.uuid4())
-    
-    payload = json.dumps({
-    "PaymentProvider": "MTNMOBILEMONEYUG",
-    "paymentItem": "MTNMOBILEMONEYUG",
-    "amount": get_loan.principal_amount,
-    "message": "Test Transaction from Raw Financial",
-    "customerId": get_loan.borrower.phone_number,
-    "customerPhone": get_loan.borrower.phone_number,
-    "customerEmail": "jasiimwe160@gmail.com",
-    "customerReference": get_loan.borrower.phone_number,
-    "metadata": None,
-    "batchId": "TestBatchId001",
-    "requestId": request_id
-    })
-    headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY, 
-            'X-Date':str(datetime.datetime.now(timezone.utc)), 
-            'X-Correlation-ID':'uuid.uuid4()',
-            'Authorization': "Bearer "+str(os.environ.get('XENTE_TOKEN')),
-            'Content-Type': 'application/json'}
-
-    response = requests.request("POST", url, headers=headers, data=payload)
-    """
-    if response.status_code == 201:
-        try:
-            #print(response.json())
-            result = response.json()
-            data = result['data']
-            request_id = data['requestId']
-            message = data['message']
-            transaction_id = data['transactionId']
-            created_at = data['createdOn']
-            #correlation_id = data['correlationId']
-
-            LoanTransactions.objects.create(
-                loan_id = get_loan,
-                transaction_id = transaction_id,
-                request_id = request_id,
-                
-                transaction_type = "Deposit",
-                transaction_created_on = created_at
-            )
-
-            Payment.objects.create(
-                user = request.user,
-                loan_id = get_loan,
-                borrower_id=get_loan.borrower,
-                amount_paid=get_loan.principal_amount,
-                when_paid=datetime.datetime.now(timezone.utc)
-            )
-
-            context = {
-                    'loan_borrowed':loan_borrowed,
-                    'total_borrowed': principal_sum
-
-                }
-            messages.success(request, message),
-            return render(request, 'channel/loan_borrowed.html', context)
-        except ValueError:
-            print("something went wrong111")
-    else:
-        try:
-            result = response.json()
-            message = result['message']
-            context = {
-                    'loan_borrowed':loan_borrowed,
-                    'total_borrowed': principal_sum
-
-                }
-            messages.error(request, message),
-            return render(request, 'channel/loan_borrowed.html', context)
-        except:
-            print(response.status_code)
-
-    context = {
-                    'loan_borrowed':loan_borrowed,
-                    'total_borrowed': principal_sum
-
-                }
-    messages.success(request, "something"),
-    return render(request, 'channel/loan_borrowed.html', context)
-    """
     context = {}
     payment_form = PaymentForm()
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST or None)
         if payment_form.is_valid():
             pf = payment_form.save(commit=False)
-            pf.user = request.user
-            pf.save()
-            messages.success(request, "Payment successfully logged")
-            return redirect('show_payments')
-        else:
+            amount = payment_form.cleaned_data.get('amount_paid')
+            date = payment_form.cleaned_data.get('when_paid')
+
+            if amount > get_loan.principal_amount:
+                messages.error(request, "Loan Amount is above that the loan amount")
+                context = {'form':payment_form}
+                return render(request, 'loans/create_payment.html', context)
             
+
+
+            #use xente
+            #result = xente_login.get_token(constants.api_key, constants.api_password)
+
+            
+            result_method= xente_payment_MTN.create_payment_MTN(amount, get_loan.borrower.phone_number, get_loan.borrower.phone_number,get_loan.borrower.email, get_loan.borrower.phone_number)
+            print(result_method)
+            if result_method.status_code == 201:
+                try:
+                    #print(response.json())
+                    result = result_method.json()
+                    data = result['data']
+                    request_id = data['requestId']
+                    message = data['message']
+                    transaction_id = data['transactionId']
+                    created_at = data['createdOn']
+                    #correlation_id = data['correlationId']
+
+                    LoanTransactions.objects.create(
+                        loan_id = get_loan,
+                        transaction_id = transaction_id,
+                        request_id = request_id,
+                        transaction_type = "Deposit",
+                        transaction_created_on = created_at
+                    )
+                
+                    Payment.objects.create(
+                        user = request.user,
+                        loan_id = get_loan,
+                        borrower_id=get_loan.borrower,
+                        amount_paid=amount,
+                        when_paid=date
+                    )
+                    
+                    #get_loan = Loans.objects.get(loan_uid=loan_uuid).update(principal_amount=amount, loan_status='paid')
+                    
+                    
+                    context = {
+                            'loan_borrowed':loan_borrowed,
+                            'total_borrowed': principal_sum,
+                            'id':get_loan.id
+                        }
+                    messages.success(request, message),
+                    return redirect('loan_borrowed', id=get_loan.id)
+                    #return render(request, 'channel/loan_borrowed.html', context)
+                except ValueError:
+                    result = result_method.json()
+                    message = data['message']
+                    messages.error(request, message),
+                    return redirect('loan_borrowed', id=get_loan.id)
+            else:
+                try:
+                    result = result_method.json()
+                    message = result['message']
+                    context = {
+                            'loan_borrowed':loan_borrowed,
+                            'total_borrowed': principal_sum,
+                            'id':get_loan.id
+
+                        }
+                    messages.error(request, message),
+                    return redirect('loan_borrowed', id=get_loan.id)
+                except ValueError:
+                    message = result_method.status_code
+                    messages.error(request, message),
+                    return redirect('loan_borrowed', id=get_loan.id)
+        else:
             context = {'form':payment_form}
             messages.error(request, "Oops, Field error")
             return render(request, 'loans/create_payment.html', context)
     else:
-        context = {'form':payment_form}
+        context = {
+                'loan_details':get_loan,
+                'form':payment_form
+            }
         return render(request, 'loans/create_payment.html', context)
-    """
+
 
 def get_loan_requests(request):
     get_loan_request = LoanRequest.objects.all()
