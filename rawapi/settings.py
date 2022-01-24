@@ -216,9 +216,9 @@ XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER', default='')
 
 ACCOUNT_ID = config('ACCOUNT_ID', default='')
 
-XENTE_BASE_URL_PAYMENT="http://sandbox666353.westeurope.cloudapp.azure.com:9080"
+XENTE_BASE_URL_PAYMENT="https://payments.xente.co"
 
-XENTE_BASE_URL_RESELLER="http://sandbox666353.westeurope.cloudapp.azure.com:8067"
+XENTE_BASE_URL_RESELLER="https://reseller.xente.co"
 
 
 

@@ -11,6 +11,8 @@ urlpatterns = [
     path('issue_loan/<str:uid>/', give_loan, name="issue_loan"),
     path('loan_scoring/<str:uid>/', loan_scoring, name="loan_scoring"),
     path('payments/<str:loan_uuid>/', payment_view, name="payments"),
+    path('edit_loan/<str:loan_uid>/', edit_loan_view, name="edit_loan"),
+    path('delete_loan/<str:loan_uid>/', delete_loan_view, name="delete_loan"),
 
     #api
     path('api/loan_request/',loan_request, name="loan_request"),

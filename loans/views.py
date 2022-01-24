@@ -80,12 +80,42 @@ def loan_details(request, id):
     }
     return render(request, 'loans/loan_details.html', context)
 
+
+def edit_loan_view(request, loan_uid):
+    context= {}
+    get_loan = Loans.objects.get(loan_uid=loan_uid)
+    edit_loan_form = LoansForm(instance=get_loan)
+    if request.method == 'POST':
+        edit_loan_form = LoansForm(request.POST, instance=get_loan)
+        if edit_loan_form.is_valid():
+            edit_loan_form.save()
+            messages.success(request, "Successfully edited loan")
+            return redirect('show_loans')
+        else:
+            context['edit_loan_form']=edit_loan_form
+            messages.error(request, "Opps Field error")
+            return render(request, 'loans/edit_loan.html', context)
+
+    else:
+        context['edit_loan_form']=edit_loan_form
+        
+        return render(request, 'loans/edit_loan.html', context)
+
+def delete_loan_view(request, loan_uid):
+    get_loan = Loans.objects.get(loan_uid=loan_uid)
+    get_loan.delete()
+    messages.error(request, "Successfully deleted loan")
+    return redirect('show_loans')
+
+
+
 def payment_view(request, loan_uuid):
     #get_loan
     get_loan = Loans.objects.get(loan_uid=loan_uuid)
+    
 
-    loan_borrowed = Loans.objects.filter(loan_uid=loan_uuid)
-    principal_sum = Loans.objects.filter(loan_uid=loan_uuid).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+    loan_borrowed = Loans.objects.filter(borrower=get_loan.borrower)
+    principal_sum = Loans.objects.filter(borrower=get_loan.borrower).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
     #disburse the credit through xente
     
     context = {}
@@ -108,9 +138,18 @@ def payment_view(request, loan_uuid):
             #result = xente_login.get_token(constants.api_key, constants.api_password)
 
             
-            result_method= xente_payment_MTN.create_payment_MTN(amount, get_loan.borrower.phone_number, get_loan.borrower.phone_number,get_loan.borrower.email, get_loan.borrower.phone_number)
+            result_method = xente_payment_MTN.create_payment_MTN(amount, get_loan.borrower.phone_number, get_loan.borrower.phone_number,get_loan.borrower.email, get_loan.borrower.phone_number)
+            #result_method= xente_payment_MTN.create_payment_MTN(amount, '256775022805', '256775022805','jasiimwe160@gmail.com', '256775022805')
             print(result_method)
-            if result_method.status_code == 201:
+            if not result_method:
+                context = {
+                    'loan_details':get_loan,
+                    'form':payment_form
+                }
+                messages.warning(request, "Please refresh")
+                return render(request, 'loans/create_payment.html', context)
+
+            elif result_method.status_code == 201:
                 try:
                     #print(response.json())
                     result = result_method.json()
@@ -143,16 +182,16 @@ def payment_view(request, loan_uuid):
                     context = {
                             'loan_borrowed':loan_borrowed,
                             'total_borrowed': principal_sum,
-                            'id':get_loan.id
+                            'id':get_loan.borrower.id
                         }
                     messages.success(request, message),
-                    return redirect('loan_borrowed', id=get_loan.id)
+                    return redirect('loan_borrowed', id=get_loan.borrower.id)
                     #return render(request, 'channel/loan_borrowed.html', context)
                 except ValueError:
                     result = result_method.json()
                     message = data['message']
                     messages.error(request, message),
-                    return redirect('loan_borrowed', id=get_loan.id)
+                    return redirect('loan_borrowed', id=get_loan.borrower.id)
             else:
                 try:
                     result = result_method.json()
@@ -160,15 +199,15 @@ def payment_view(request, loan_uuid):
                     context = {
                             'loan_borrowed':loan_borrowed,
                             'total_borrowed': principal_sum,
-                            'id':get_loan.id
+                            'id':get_loan.borrower.id
 
                         }
                     messages.error(request, message),
-                    return redirect('loan_borrowed', id=get_loan.id)
+                    return redirect('loan_borrowed', id=get_loan.borrower.id)
                 except ValueError:
                     message = result_method.status_code
                     messages.error(request, message),
-                    return redirect('loan_borrowed', id=get_loan.id)
+                    return redirect('loan_borrowed', id=get_loan.borrower.id)
         else:
             context = {'form':payment_form}
             messages.error(request, "Oops, Field error")
@@ -222,8 +261,8 @@ def give_loan(request, uid):
         if create_loan:
             #disburse the credit through xente
             #response = xente_payment_MTN.create_payment_MTN(get_loan_request.loan_amount, loan_borrowed.phone_number, loan_borrowed.phone_number, loan_borrowed.email, loan_borrowed.phone_number)
-            xente_login.get_token_reseller('11B0199BA7F14827BC3247097002A57D', 'XentE@Test1234')
-            #print(os.environ.get('XENTE_RESELLER_TOKEN'))
+            xente_login.get_token_reseller('82B3F2FEAF6B47AB99CEE3ED07D61419', 'XentE@Test1234')
+            print(os.environ.get('XENTE_RESELLER_TOKEN'))
             url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/transactions"
 
             request_id = str(uuid.uuid4())
@@ -233,10 +272,10 @@ def give_loan(request, uid):
                 "productItem": "MTNMOBILEMONEYPAYOUTUG_MTNMOBILEMONEYPAYOUTUG",
                 "amount": get_loan_request.loan_amount,
                 "message": "Test Transation from Raw Financial",
-                "customerId": get_loan_request.loan_amount,
-                "customerPhone": get_loan_request.loan_amount,
+                "customerId": '256775022805',
+                "customerPhone": '256775022805',
                 "customerEmail": loan_borrowed.email,
-                "customerReference": get_loan_request.loan_amount,
+                "customerReference": '256775022805',
                 "metadata": None,
                 "batchId": "TestBatchId001",
                 "requestId": request_id

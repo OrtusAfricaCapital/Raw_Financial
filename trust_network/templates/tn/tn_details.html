@@ -187,7 +187,7 @@
               <td>{{ borrower.address }}</td>
               <td>{{ borrower.created_at }}</td>
                 <td class="project-actions text-center">
-                      <a class="btn btn-primary btn-sm" href="#" class="btn btn-primary">
+                      <a class="btn btn-primary btn-sm" href="{% url 'loan_borrowed' id=borrower.pk %}" class="btn btn-primary">
                           <i class="fas fa-folder">
                           </i>
                           View Loans

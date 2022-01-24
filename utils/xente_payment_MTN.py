@@ -45,7 +45,7 @@ def create_payment_MTN(amount, customer_id, customer_phone, customer_email, cust
 def reseller(amount, customer_id, customer_phone, customer_email, customer_reference):
     result = xente_login.get_token(constants.api_key, constants.api_password)
     if result:
-        url = constants.base_url_payment+"/api/v1/transactions"
+        url = constants.base_url_reseller+"/api/v1/transactions"
         headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY, 
                 'X-Date':str(datetime.datetime.now(timezone.utc)), 
                 'X-Correlation-ID':'uuid.uuid4()',
