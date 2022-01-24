@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> RF | INVESTOR DETAILS</title>
+  <title> RF | TRUST NETWORK DETAILS</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -35,12 +35,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Channel Details</h1>
+            <h1>Trust Network Details</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Channel Details</li>
+              <li class="breadcrumb-item active">Trust Network Details</li>
             </ol>
           </div>
         </div>
@@ -54,7 +54,7 @@
       <div class="card">
         <div class="card-header">
         	
-          <h3 class="card-title">Details for : <b>{{channel_details.ChannelName}}</b></h3>
+          <h3 class="card-title">Details for : <b>{{tn_details.Name}}</b></h3>
           <div class="card-tools">
           	<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">
                   Add Service
@@ -100,7 +100,7 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer">
-            <a class="btn btn-warning" href="{% url 'show_trustnetwork' %}">Show Trust Network</a>
+            <a class="btn btn-warning" href="{% url 'show_trustnetwork' %}">Show Trust Networks</a>
             <!--<a class="btn btn-warning" href="#"></a>-->
           <!--<a class="btn btn-warning" href="#" >Add Channel</a>-->
         </div>
