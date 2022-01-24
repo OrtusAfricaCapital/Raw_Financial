@@ -79,19 +79,20 @@
               <form role="form" method="post" enctype="multipart/form-data"> {% csrf_token %}
                 
                 <div class="card-body">
-                  <div class="row">
+                
                       
-                    <h5>Loan Details</h5>
-                    <p>Loan UID: <strong>{{loan_details.loan_uid}}</strong></p>
-                    <p>Borrower Name: <strong>{{loan_details.borrower.first_name}} {{loan_details.borrower.last_name}}</strong></p>
-                    <p>Loan Amount: <strong>{{loan_details.principal_amount}} </strong></p>
-                    <p>Interest Rate: <strong>{{loan_details.interest_rate}} </strong></p>
-                    <p>Loan Release: <strong>{{loan_details.loan_release_date}} </strong></p>
-                    <p>Loan Duration: <strong>{{loan_details.loan_duration}} </strong></p>
-                    <p>Loan Due Date: <strong>{{loan_details.loan_due_date}} </strong></p>
+                    <h5>Loan Details</h5></br>
+                    <p>Loan UID: <strong>{{loan_details.loan_uid}}</strong></p><br>
+                    <p>Borrower Name: <strong>{{loan_details.borrower.first_name}} {{loan_details.borrower.last_name}}</strong></p><br>
+                    <p>Loan Amount: <strong>{{loan_details.principal_amount}} </strong></p><br>
+                    <p>Interest Rate: <strong>{{loan_details.interest_rate}} </strong></p><br>
+                    <p>Loan Release: <strong>{{loan_details.loan_release_date}} </strong></p><br>
+                    <p>Loan Duration: <strong>{{loan_details.loan_duration}} </strong></p><br>
+                    <p>Loan Due Date: <strong>{{loan_details.loan_due_date}} </strong></p><br>
                     <p>Loan Status: <strong>{{loan_details.loan_status}} </strong></p>
-              
-                  </div>
+
+                    <hr>
+                  
                     <div class="form-group">
                         <label>Amount Paid</label>
                         <input type="text" class="form-control" placeholder="" 
