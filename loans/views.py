@@ -12,7 +12,7 @@ from django.db.models import Sum
 from wallet.models import LoanTransactions
 from .forms import *
 from .models import *
-from utils import calculations, xente_payment_MTN, xente_login, constants
+from utils import calculations, get_transaction_reseller, xente_payment_MTN, xente_login, constants
 import json
 import requests
 from django.conf import settings
@@ -34,18 +34,22 @@ class LoanView(ListView):
     model = Loans
     template_name = 'loans/show_loans.html'
 
+
+
 def create_loan_view(request, id):
     try:
         borrower = Borrower.objects.get(id=id)
         tn = TrustNetwork.objects.get(id=borrower.tn.id)
+        channel = Channel.objects.get(id=tn.channel.id)
         if request.method == 'POST':
             loan_form = LoanForm(request.POST or None)
             if loan_form.is_valid():
                 lf = loan_form.save(commit=False)
-                lf.borrower = borrower
+                lf.borrower = borrower.channel_uid
                 lf.interest_rate = tn.MonthlyInterestRate
-                loan_form.save()
-                messages.success(request, "Loan Created successfully")
+                amount = loan_form.cleaned_data.get('amount')
+                lf.save()
+                messages.success(request, "successfully created loan request")
                 return redirect('loan_borrowed', id=id)
             else:
                 loan_form = LoanForm()
@@ -60,6 +64,8 @@ def create_loan_view(request, id):
             return render(request, 'loans/create_loan.html', context)
     except Borrower.DoesNotExist:
         return redirect('loan_borrowed', id=id)
+
+
 
 def loan_details(request, id):
     loan_borrowed = Loans.objects.get(id=id)
@@ -135,21 +141,34 @@ def payment_view(request, loan_uuid):
 
 
             #use xente
-            #result = xente_login.get_token(constants.api_key, constants.api_password)
+            xente_login.get_token(constants.api_key, constants.api_password)
+            #print(r)
 
             
-            result_method = xente_payment_MTN.create_payment_MTN(amount, get_loan.borrower.phone_number, get_loan.borrower.phone_number,get_loan.borrower.email, get_loan.borrower.phone_number)
-            #result_method= xente_payment_MTN.create_payment_MTN(amount, '256775022805', '256775022805','jasiimwe160@gmail.com', '256775022805')
-            print(result_method)
-            if not result_method:
-                context = {
-                    'loan_details':get_loan,
-                    'form':payment_form
-                }
-                messages.warning(request, "Please refresh")
-                return render(request, 'loans/create_payment.html', context)
+            #result_method = xente_payment_MTN.create_payment_MTN(amount, get_loan.borrower.phone_number, get_loan.borrower.phone_number,get_loan.borrower.email, get_loan.borrower.phone_number)
+            
+            url = constants.base_url_payment+"/api/v1/transactions"
+            headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY, 
+                    'X-Date':str(datetime.datetime.now(timezone.utc)), 
+                    'X-Correlation-ID':'uuid.uuid4()',
+                    'Authorization': "Bearer "+str(os.environ.get('XENTE_TOKEN')),
+                    'Content-Type': 'application/json'}
+            payload = json.dumps({
+                "PaymentProvider": "MTNMOBILEMONEYUG",
+                "paymentItem": "MTNMOBILEMONEYUG",
+                "amount": amount,
+                "message": "Test Transaction",
+                "customerId": get_loan.borrower.phone_number,
+                "customerPhone": get_loan.borrower.phone_number,
+                "customerEmail": get_loan.borrower.email,
+                "customerReference": get_loan.borrower.phone_number,
+                "metadata": None,
+                "batchId": "TestBatchId001",
+                "requestId": constants.request_uid,
+            })
+            result_method = requests.request("POST", url, headers=headers, data=payload)
 
-            elif result_method.status_code == 201:
+            if result_method.status_code == 201:
                 try:
                     #print(response.json())
                     result = result_method.json()
@@ -190,19 +209,21 @@ def payment_view(request, loan_uuid):
                 except ValueError:
                     result = result_method.json()
                     message = data['message']
-                    messages.error(request, message),
+                    code = str(result_method.status_code)
+                    messages.error(request, message + code)
                     return redirect('loan_borrowed', id=get_loan.borrower.id)
             else:
                 try:
                     result = result_method.json()
                     message = result['message']
+                    code = str(result_method.status_code)
                     context = {
                             'loan_borrowed':loan_borrowed,
                             'total_borrowed': principal_sum,
                             'id':get_loan.borrower.id
 
                         }
-                    messages.error(request, message),
+                    messages.error(request, message + code),
                     return redirect('loan_borrowed', id=get_loan.borrower.id)
                 except ValueError:
                     message = result_method.status_code
@@ -247,99 +268,107 @@ def give_loan(request, uid):
 
         LoanRequestStatus.objects.filter(loan_id=get_loan_request.id).update(loan_status="approved", loan_status_description="Loan Request has been approved")
         
-        
-        create_loan = Loans.objects.create(
-            borrower=loan_borrowed,
-            principal_amount=get_loan_request.loan_amount,
-            loan_release_date=datetime.datetime.now(timezone.utc),
-            interest_rate=loan_borrowed.tn.MonthlyInterestRate,
-            loan_duration = get_loan_request.loan_duration,
-            loan_status="Issued"
-        )
-        
-        
-        if create_loan:
-            #disburse the credit through xente
-            #response = xente_payment_MTN.create_payment_MTN(get_loan_request.loan_amount, loan_borrowed.phone_number, loan_borrowed.phone_number, loan_borrowed.email, loan_borrowed.phone_number)
-            xente_login.get_token_reseller('82B3F2FEAF6B47AB99CEE3ED07D61419', 'XentE@Test1234')
-            print(os.environ.get('XENTE_RESELLER_TOKEN'))
-            url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/transactions"
+       
+        #disburse the credit through xente
+        #response = xente_payment_MTN.create_payment_MTN(get_loan_request.loan_amount, loan_borrowed.phone_number, loan_borrowed.phone_number, loan_borrowed.email, loan_borrowed.phone_number)
+        r=xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
+        print (r)
+        print(os.environ.get('XENTE_RESELLER_TOKEN'))
+        url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/transactions"
 
-            request_id = str(uuid.uuid4())
-            
-            payload = json.dumps({
-                "product": "MTNMOBILEMONEYPAYOUTUG_MTNMOBILEMONEYPAYOUTUG",
-                "productItem": "MTNMOBILEMONEYPAYOUTUG_MTNMOBILEMONEYPAYOUTUG",
-                "amount": get_loan_request.loan_amount,
-                "message": "Test Transation from Raw Financial",
-                "customerId": '256775022805',
-                "customerPhone": '256775022805',
-                "customerEmail": loan_borrowed.email,
-                "customerReference": '256775022805',
-                "metadata": None,
-                "batchId": "TestBatchId001",
-                "requestId": request_id
-                })
-            headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY_RESELLER, 
-                    'X-Date':str(datetime.datetime.now(timezone.utc)), 
-                    'X-Correlation-ID':'uuid.uuid4()',
-                    'Authorization': "Bearer "+str(os.environ.get('XENTE_RESELLER_TOKEN')),
-                    'Content-Type': 'application/json'}
+        request_id = str(uuid.uuid4())
+        
+        payload = json.dumps({
+            "product": "MTNMOBILEMONEYPAYOUTUG_MTNMOBILEMONEYPAYOUTUG",
+            "productItem": "MTNMOBILEMONEYPAYOUTUG_MTNMOBILEMONEYPAYOUTUG",
+            "amount": get_loan_request.loan_amount,
+            "message": "Test Transation from Raw Financial",
+            "customerId": '256775022805',
+            "customerPhone": '256775022805',
+            "customerEmail": loan_borrowed.email,
+            "customerReference": '256775022805',
+            "metadata": None,
+            "batchId": "TestBatchId001",
+            "requestId": request_id
+            })
+        headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY_RESELLER, 
+                'X-Date':str(datetime.datetime.now(timezone.utc)), 
+                'X-Correlation-ID':'uuid.uuid4()',
+                'Authorization': "Bearer "+str(os.environ.get('XENTE_RESELLER_TOKEN')),
+                'Content-Type': 'application/json'}
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("POST", url, headers=headers, data=payload)
 
-            if response.status_code == 201:
-                try:
-                    #print(response.json())
+        if response.status_code == 201:
+            try:
+                #print(response.json())
+                result = response.json()
+                data = result['data']
+                request_id = data['requestId']
+                message = data['message']
+                transaction_id = data['transactionId']
+                created_at = data['createdOn']
+                #correlation_id = data['correlationId']
+                
+
+                url_transactions = constants.base_url_reseller+"/api/v1/transactions/"+transaction_id+"?pageSize=20&pageNumber=1"
+
+                response = requests.request("GET", url_transactions, headers=headers)
+                if response.status_code == 200:
                     result = response.json()
-                    data = result['data']
-                    request_id = data['requestId']
-                    message = data['message']
-                    transaction_id = data['transactionId']
-                    created_at = data['createdOn']
-                    #correlation_id = data['correlationId']
+                    result_data = result['data']
+                    status  = result_data['status']
+                    #print(result)
                     
-                    LoanTransactions.objects.create(
-                        loan_id = create_loan,
-                        transaction_id = transaction_id,
-                        request_id = request_id,
-                        
-                        transaction_type = "Withdraw",
-                        transaction_created_on = created_at
-                    )
+                    if status == "SUCCESS":
+                        create_loan=Loans.objects.create(
+                                borrower=loan_borrowed,
+                                principal_amount=get_loan_request.loan_amount,
+                                loan_release_date=datetime.datetime.now(timezone.utc),
+                                interest_rate=loan_borrowed.tn.MonthlyInterestRate,
+                                loan_duration = get_loan_request.loan_duration,
+                                loan_status="Issued")
 
-                    
-                    
-                    context = {
-                            'loan_request':get_loan_request,
-                            'loan_borrowed':loan_borrowed,
+                        LoanTransactions.objects.create(
+                                loan_id = create_loan,
+                                transaction_id = transaction_id,
+                                request_id = request_id,
+                                transaction_type = "Withdraw",
+                                transaction_created_on = created_at
+                            )
+                    elif status == "FAILED":
 
-                        }
-                    messages.success(request, message),
-                    return render(request, 'loans/loan_request_details.html', context)
-                except ValueError:
-                    print("something went wrong111")
-            else:
-                try:
-                    result = response.json()
-                    message = result['message']
-                    context = {
-                            'loan_request':get_loan_request,
-                            'loan_borrowed':loan_borrowed,
+                        context = {
+                                'loan_request':get_loan_request,
+                                'loan_borrowed':loan_borrowed,
+                            }
+                        messages.success(request, "Transaction Failed"),
+                        return render(request, 'loans/loan_request_details.html', context)
+                
+                context = {
+                        'loan_request':get_loan_request,
+                        'loan_borrowed':loan_borrowed,
 
-                        }
-                    messages.error(request, message),
-                    return render(request, 'loans/loan_request_details.html', context)
-                except:
-                    print(response.status_code)
-                #print(os.environ.get('XENTE_TOKEN'))
-                    
-        
+                    }
+                messages.success(request, message),
+                return render(request, 'loans/loan_request_details.html', context)
+            except ValueError:
+                print("something went wrong111")
         else:
-            pass
-        
-        
-        
+            try:
+                result = response.json()
+                message = result['message']
+                context = {
+                        'loan_request':get_loan_request,
+                        'loan_borrowed':loan_borrowed,
+
+                    }
+                messages.error(request, message),
+                return render(request, 'loans/loan_request_details.html', context)
+            except:
+                print(response.status_code)
+            #print(os.environ.get('XENTE_TOKEN'))
+
         context = {
                 'loan_request':get_loan_request,
                 'loan_borrowed':loan_borrowed,

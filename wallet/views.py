@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
-from rawapi.settings import XENTE_TOKEN
+
 from .forms import *
 from .models import *
 from django.db.models import Sum

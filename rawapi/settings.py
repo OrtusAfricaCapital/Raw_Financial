@@ -210,18 +210,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-XENTE_API_KEY = config('XENTE_API_KEY', default='')
+XENTE_API_KEY = config('XENTE_API_KEY')
 
-XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER', default='')
+XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER')
 
-ACCOUNT_ID = config('ACCOUNT_ID', default='')
+ACCOUNT_ID_PAYMENTS = config('ACCOUNT_ID_PAYMENTS')
+
+ACCOUNT_ID_RESELLER = config('ACCOUNT_ID_RESELLER')
 
 XENTE_BASE_URL_PAYMENT="https://payments.xente.co"
 
 XENTE_BASE_URL_RESELLER="https://reseller.xente.co"
 
+SUBSCRIPTION_ID=config('SUBSCRIPTION_ID')
 
+XENTE_PASSWORD=config('XENTE_PASSWORD')
 
-XENTE_PASSWORD=config('XENTE_PASSWORD', default='')
-
-XENTE_TOKEN=config('XENTE_TOKEN', default='')

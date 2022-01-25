@@ -43,10 +43,11 @@ def get_token(api_key, api_password):
         response = response.json()
         result = True
         os.environ['XENTE_TOKEN'] = response['token']
-    else:
-        result = False
 
-    return result
+    
+        
+
+    return response
 
 def get_token_reseller(api_key, api_password):
     payload = json.dumps({'apiKey':api_key, 'password':api_password})
@@ -60,6 +61,7 @@ def get_token_reseller(api_key, api_password):
         os.environ['REFRESH_XENTE_TOKEN'] = response['refreshToken']
     else:
         result = False
+        print(response)
 
     return result
 
