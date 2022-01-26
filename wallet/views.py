@@ -1,4 +1,5 @@
 
+#from statistics import correlation
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
@@ -17,10 +18,10 @@ import uuid
 import datetime
 from datetime import timezone
 import os
-from utils import xente_login
+from utils import xente_login, constants
 
 
-header_api_key = settings.XENTE_API_KEY
+header_api_key = settings.XENTE_API_KEY_RESELLER
 header_date = str(datetime.datetime.now(timezone.utc))
 header_correlation_id = 'uuid.uuid4()'
 header_content_type = 'application/json'
@@ -40,13 +41,80 @@ def show_wallet(request):
     wf = WithdrawForm()
     transactions = LoanTransactions.objects.all()
     wallet_sum = WalletTransactions.objects.aggregate(Sum('amount'))['amount__sum'] or 0.0
+    subscription_id = settings.SUBSCRIPTION_ID
+    account_id = settings.ACCOUNT_ID_RESELLER
+    account_id_payment = settings.ACCOUNT_ID_PAYMENTS
+    correlation_id = str(uuid.uuid4())
+    #get credit fund
+    
+    xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
+    #print (r)
+    #print(os.environ.get('XENTE_RESELLER_TOKEN'))
+
+    url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/Accounts/"+account_id+"/"+subscription_id+"/Balances"
+
+    headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY_RESELLER, 
+                    'X-Date':str(datetime.datetime.now(timezone.utc)), 
+                    'X-Correlation-ID':correlation_id,
+                    'Authorization': "Bearer "+str(os.environ.get('XENTE_RESELLER_TOKEN')),
+                    'Content-Type': 'application/json'}
+
+    response = requests.request("GET", url, headers=headers)
+
+    #print(response)
+
+    if response.status_code == 200:
+        result = response.json()
+        print(result)
+        data = result['data']
+        balance = data['balance']
+        #wallet_info = data['wallets']
+        #status = wallet_info['status_info']
+        context = {
+            
+            'dep':balance,
+            'transactions':transactions,
+        }
+        return render(request, 'wallet/wallet.html', context)
+    
+    xente_login.get_token(constants.api_key, constants.api_password)
+    #print(rr)
+    #print(os.environ.get('XENTE_TOKEN'))
+
+    headers_payment={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY, 
+                    'X-Date':str(datetime.datetime.now(timezone.utc)), 
+                    'X-Correlation-ID':correlation_id,
+                    'Authorization': "Bearer "+str(os.environ.get('XENTE_TOKEN')),
+                    'Content-Type': 'application/json'}
+
+    url_payments = constants.base_url_payment+"/api/v1/Accounts/"+account_id_payment
+    result_method = requests.request("GET", url_payments, headers=headers_payment)
+    if result_method.status_code == 200:
+        result = result_method.json()
+        #print(result)
+        payload = result['data']
+        balance_payment = payload['balance']
+
+        context = {
+            
+            'collected_amount':balance_payment,
+            'transactions':transactions,
+        }
+        return render(request, 'wallet/wallet.html', context)
+        
+
     context = {
         'df_form':df,
         'wf_form':wf,
-        'dep':wallet_sum,
+        'dep':0,
         'transactions':transactions,
     }
     return render(request, 'wallet/wallet.html', context)
+
+    #get money collected
+    
+        
+    
 
 
 def deposit_view(request):

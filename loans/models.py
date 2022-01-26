@@ -78,7 +78,7 @@ class LoanRequest(models.Model):
         return self.loan_request_uid
 
 class LoanRequestStatus(models.Model):
-    loan_id = models.ForeignKey(LoanRequest, related_name="loan_request", on_delete=models.CASCADE)
+    loan_id = models.ForeignKey(LoanRequest, related_name="loan_request", on_delete=models.CASCADE, null=True, blank=True)
     loan_status = models.CharField(max_length=50, choices=LOAN_REQUEST_STATUS, default="received")
     loan_status_description = models.TextField()
     created_at = models.DateField(auto_now=True)
@@ -95,6 +95,7 @@ class Payment(models.Model):
     borrower_id = models.ForeignKey(Borrower, on_delete=models.CASCADE)
     amount_paid = models.IntegerField()
     when_paid = models.DateField()
+    trnsaction_status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
