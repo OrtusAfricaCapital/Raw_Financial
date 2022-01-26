@@ -77,6 +77,30 @@ def show_wallet(request):
         }
         return render(request, 'wallet/wallet.html', context)
     
+    
+
+    context = {
+        'df_form':df,
+        'wf_form':wf,
+        'dep':0,
+        'transactions':transactions,
+    }
+    return render(request, 'wallet/wallet.html', context)
+
+    #get money collected
+    
+        
+    
+def get_wallet_collections_view(request):
+    
+    principal_sum = Loans.objects.all().aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+    transactions = LoanTransactions.objects.all()
+    wallet_sum = WalletTransactions.objects.aggregate(Sum('amount'))['amount__sum'] or 0.0
+    subscription_id = settings.SUBSCRIPTION_ID
+    account_id = settings.ACCOUNT_ID_RESELLER
+    account_id_payment = settings.ACCOUNT_ID_PAYMENTS
+    correlation_id = str(uuid.uuid4())
+
     xente_login.get_token(constants.api_key, constants.api_password)
     #print(rr)
     #print(os.environ.get('XENTE_TOKEN'))
@@ -96,25 +120,20 @@ def show_wallet(request):
         balance_payment = payload['balance']
 
         context = {
-            
+            'total_loan': principal_sum,
             'collected_amount':balance_payment,
+            'balance':principal_sum-balance_payment,
             'transactions':transactions,
         }
-        return render(request, 'wallet/wallet.html', context)
+        return render(request, 'wallet/wallet_collections.html', context)
         
 
     context = {
-        'df_form':df,
-        'wf_form':wf,
-        'dep':0,
-        'transactions':transactions,
-    }
+            'total_loan': principal_sum,
+            'collected_amount':0,
+            'transactions':transactions,
+        }
     return render(request, 'wallet/wallet.html', context)
-
-    #get money collected
-    
-        
-    
 
 
 def deposit_view(request):

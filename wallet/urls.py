@@ -9,6 +9,7 @@ urlpatterns = [
     path('deposit/', deposit_view, name='deposit'),
     path('withdraw/', withdraw_view, name='withdraw'),
     path('login_sandbox/', login_sandbox_api, name='login_sandbox'),
+    path('wallet_collections/', get_wallet_collections_view, name='wallet_collections')
     
     #path('show_wallet/', Transaction.as_view(), name='show_transactions')
 ]
