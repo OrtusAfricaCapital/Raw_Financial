@@ -45,6 +45,8 @@ def show_wallet(request):
     account_id = settings.ACCOUNT_ID_RESELLER
     account_id_payment = settings.ACCOUNT_ID_PAYMENTS
     correlation_id = str(uuid.uuid4())
+    balance = 0
+    transaction_data = []
     #get credit fund
     
     xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
@@ -52,7 +54,7 @@ def show_wallet(request):
     #print(os.environ.get('XENTE_RESELLER_TOKEN'))
 
     url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/Accounts/"+account_id+"/"+subscription_id+"/Balances"
-
+    url_transactions = settings.XENTE_BASE_URL_RESELLER+"/api/v1/transactions/"
     headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY_RESELLER, 
                     'X-Date':str(datetime.datetime.now(timezone.utc)), 
                     'X-Correlation-ID':correlation_id,
@@ -60,12 +62,17 @@ def show_wallet(request):
                     'Content-Type': 'application/json'}
 
     response = requests.request("GET", url, headers=headers)
+    transactions_result  = requests.request("GET", url_transactions, headers=headers, params={'pageSize':20, 'pageNumber':1})
 
+    print (response)
+    print(transactions_result)
     #print(response)
 
-    if response.status_code == 200:
+    if response.status_code == 200 and transactions_result.status_code == 200:
         result = response.json()
-        print(result)
+        transaction_result_data = transactions_result.json()
+        transaction_data = transaction_result_data['data']['transactions']
+        
         data = result['data']
         balance = data['balance']
         #wallet_info = data['wallets']
@@ -73,17 +80,16 @@ def show_wallet(request):
         context = {
             
             'dep':balance,
-            'transactions':transactions,
+            'transactions':transaction_data,
         }
         return render(request, 'wallet/wallet.html', context)
     
     
 
     context = {
-        'df_form':df,
-        'wf_form':wf,
-        'dep':0,
-        'transactions':transactions,
+        
+        'dep':balance,
+        'transactions':transaction_data,
     }
     return render(request, 'wallet/wallet.html', context)
 
@@ -100,7 +106,7 @@ def get_wallet_collections_view(request):
     account_id = settings.ACCOUNT_ID_RESELLER
     account_id_payment = settings.ACCOUNT_ID_PAYMENTS
     correlation_id = str(uuid.uuid4())
-
+    balance_payment = 0
     xente_login.get_token(constants.api_key, constants.api_password)
     #print(rr)
     #print(os.environ.get('XENTE_TOKEN'))
@@ -112,10 +118,14 @@ def get_wallet_collections_view(request):
                     'Content-Type': 'application/json'}
 
     url_payments = constants.base_url_payment+"/api/v1/Accounts/"+account_id_payment
+    url_transactions = constants.base_url_payment+"/api/v1/transactions/"
     result_method = requests.request("GET", url_payments, headers=headers_payment)
-    if result_method.status_code == 200:
+    transactions_result  = requests.request("GET", url_transactions, headers=headers_payment, params={'pageSize':20, 'pageNumber':1})
+    if result_method.status_code == 200 and transactions_result.status_code == 200:
         result = result_method.json()
-        #print(result)
+        transaction_result_data = transactions_result.json()
+        transaction_data = transaction_result_data['data']['transactions']
+        #transactions = transaction_data['transactions']
         payload = result['data']
         balance_payment = payload['balance']
 
@@ -123,17 +133,22 @@ def get_wallet_collections_view(request):
             'total_loan': principal_sum,
             'collected_amount':balance_payment,
             'balance':principal_sum-balance_payment,
-            'transactions':transactions,
+            'transactions':transaction_data,
         }
         return render(request, 'wallet/wallet_collections.html', context)
         
 
     context = {
             'total_loan': principal_sum,
-            'collected_amount':0,
+            'collected_amount':balance_payment,
+            'balance':principal_sum-balance_payment,
+            
             'transactions':transactions,
         }
     return render(request, 'wallet/wallet.html', context)
+
+
+
 
 
 def deposit_view(request):

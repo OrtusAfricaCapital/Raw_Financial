@@ -76,7 +76,7 @@
                     <!-- small box -->
                     <div class="small-box bg-white">
                       <div class="inner">
-                        <h3>UGX {{collected_amount}}</h3>
+                        <h3>UGX {{total_loan}}</h3>
         
                         <p>Total Loan Amount</p>
                       </div>
@@ -216,11 +216,11 @@
                <table id="example1" class="table table-bordered table-striped">
                  <thead>
                  <tr>
-                  <th>Loan ID</th>
-                  <th>Transaction ID</th>  
+                  <th>Transaction ID</th>
+                  <th>Cuustomer ID</th>
+                  <th>Status</th>  
                   <th>Type</th>
-                   <th>Amount</th>
-                  
+                  <th>Amount</th>
                    <th>When</th>
                  </tr>
                  </thead>
@@ -228,15 +228,12 @@
                     
                      {% for fi in transactions %}
                      <tr>
-                       <td><a href="#">{{fi.loan_id}}</a></td>
-                       <td><a href="#">{{fi.transaction_id}}</a></td>
-                       {% if fi.transaction_type == "Deposit" %}
-                        <td style="color: green;">{{ fi.transaction_type}}</td>
-                       {% else %}
-                       <td style="color: red;">{{ fi.transaction_type}}</td>
-                       {% endif %}
-                       <td>{{ fi.loan_id.principal_amount}}</td>
-                       <td>{{ fi.transaction_created_on }}</td>
+                       <td><a href="#">{{fi.transactionId}}</a></td>
+                       <td><a href="#">{{fi.customerId}}</a></td>
+                       <td>{{fi.status}}</td>
+                       <td>{{fi.type}}</td>
+                       <td>{{fi.amount}}</td>
+                       <td>{{ fi.createdOn }}</td>
                       
                      </tr>
                      {% endfor %}
