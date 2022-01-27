@@ -377,13 +377,7 @@ def give_loan(request, uid):
                         print(result)
                         
                         if status == "PROCESSING":
-                            LoanTransactions.objects.create(
-                                    
-                                    transaction_id = transaction_id,
-                                    request_id = request_id,
-                                    transaction_type = "Withdraw",
-                                    transaction_created_on = created_at
-                                )
+                            
                             context = {
                                     'loan_request':get_loan_request,
                                     'loan_borrowed':loan_borrowed,
@@ -414,13 +408,7 @@ def give_loan(request, uid):
                             messages.warning(request, "Loan Successfully Issued")
                             return render(request, 'loans/loan_request_details.html', context)
                         elif status == "FAILED":
-                            LoanTransactions.objects.create(
-                                    
-                                    transaction_id = transaction_id,
-                                    request_id = request_id,
-                                    transaction_type = "Withdraw",
-                                    transaction_created_on = created_at
-                                )
+                            
 
                             context = {
                                     'loan_request':get_loan_request,
