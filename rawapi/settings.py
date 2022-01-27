@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+from email.policy import default
 import os
 from django.contrib.messages import constants as messages
 from pathlib import Path
@@ -210,19 +211,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-XENTE_API_KEY = config('XENTE_API_KEY')
+XENTE_API_KEY = config('XENTE_API_KEY', default='wdwe')
 
-XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER')
+XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER', default='wdwe')
 
-ACCOUNT_ID_PAYMENTS = config('ACCOUNT_ID_PAYMENTS')
+ACCOUNT_ID_PAYMENTS = config('ACCOUNT_ID_PAYMENTS', default='123')
 
-ACCOUNT_ID_RESELLER = config('ACCOUNT_ID_RESELLER')
+ACCOUNT_ID_RESELLER = config('ACCOUNT_ID_RESELLER', default='123')
 
 XENTE_BASE_URL_PAYMENT="https://payments.xente.co"
 
 XENTE_BASE_URL_RESELLER="https://reseller.xente.co"
 
-SUBSCRIPTION_ID=config('SUBSCRIPTION_ID')
+SUBSCRIPTION_ID=config('SUBSCRIPTION_ID', default='123')
 
-XENTE_PASSWORD=config('XENTE_PASSWORD')
+XENTE_PASSWORD=config('XENTE_PASSWORD', default='123')
 
