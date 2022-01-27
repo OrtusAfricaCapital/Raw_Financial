@@ -24,8 +24,8 @@ LOAN_REQUEST_STATUS = (
 
 LOAN_STATUS = (
    
+    ('Pending', 'Pending'),
     ('Issued', 'Issued'),
-    ('Running', 'Running'),
     ('Paid','Paid'),
     ('Defaulted', 'Defaulted'),
 )
@@ -65,8 +65,8 @@ class Loans(models.Model):
 
 
 class LoanRequest(models.Model):
-    loan_request_uid = models.CharField(max_length=20, default=loan_rand, editable=False)
-    channel_borrower_uid = models.CharField(max_length=200)
+    loan_request_uid = models.CharField(max_length=20, default=uuid.uuid4, editable=False)
+    channel_borrower_uid = models.CharField(max_length=200, null=True, blank=True)
     channel_id = models.ForeignKey(Channel, on_delete=models.CASCADE)
     loan_amount = models.IntegerField()
     loan_purpose = models.TextField()

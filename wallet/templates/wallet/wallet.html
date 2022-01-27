@@ -52,7 +52,9 @@
       <div class="card">
         <div class="card-header">
             <h1 class="card-title">Raw Financial Wallet</h1></h3><br>
-            
+            {%if error_message %}
+              <h3 class="float-right">{{error_message}}</h3>
+              {% endif %}
         </div>
         
         <div class="card-body">
@@ -72,8 +74,8 @@
                       
                     </div>
                 </div>
-                <div class="col-lg-4 col-6" >
-                    <!-- small box -->
+                <!--<div class="col-lg-4 col-6" >
+                    <!-- small box --
                     <div class="small-box bg-white">
                       <div class="inner">
                         <h3>UGX {{collected_amount}}</h3>
@@ -85,16 +87,16 @@
                 </div>
 
                 <div class="col-lg-4 col-6" >
-                  <!-- small box -->
+                  <!-- small box --
                   <div class="small-box bg-white">
                     <div class="inner">
-                      <h3>UGX 100,000</h3>
+                      <h3>UGX 0</h3>
       
                       <p>Amount Borrowed</p>
                     </div>
                     
                   </div>
-              </div>
+              </div>-->
             </div>
             
         </div>
@@ -240,10 +242,11 @@
                  </tbody>
                  <tfoot>
                  <tr>
-                  <th>Loan ID</th>
-                  <th>Transaction ID</th>  
+                  <th>Transaction ID</th>
+                  <th>Cuustomer ID</th>
+                  <th>Status</th>  
                   <th>Type</th>
-                   <th>Amount</th>
+                  <th>Amount</th>
                    <th>When</th>
                  </tr>
                  </tfoot>

@@ -48,7 +48,10 @@ def create_loan_view(request, id):
                 lf.borrower = borrower
                 lf.interest_rate = tn.MonthlyInterestRate
                 amount = loan_form.cleaned_data.get('amount')
+                duration = loan_form.cleaned_data.get('loan_duration')
                 lf.save()
+                
+
                 messages.success(request, "successfully created loan request")
                 return redirect('loan_borrowed', id=id)
             else:
@@ -231,14 +234,7 @@ def payment_view(request, loan_uuid):
                             messages.warning(request, "Payment Successfully collected")
                             return redirect('loan_borrowed', id=get_loan.borrower.id)
                         elif status == "FAILED":
-                            LoanTransactions.objects.create(
-                                loan_id = get_loan,
-                                transaction_id = transaction_id,
-                                request_id = request_id,
-                                transaction_type = "Deposit",
-                                trnsaction_status = status,
-                                transaction_created_on = created_at
-                            )
+                            
 
                             context = {
                                 'loan_borrowed':loan_borrowed,

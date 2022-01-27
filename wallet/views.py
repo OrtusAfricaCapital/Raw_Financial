@@ -142,6 +142,7 @@ def get_wallet_collections_view(request):
             'total_loan': principal_sum,
             'collected_amount':balance_payment,
             'balance':principal_sum-balance_payment,
+            'error_message':"Wallet off line, Please refresh",
             
             'transactions':transactions,
         }
