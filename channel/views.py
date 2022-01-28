@@ -58,11 +58,33 @@ def channel_details(request, id):
     }
     return render(request, 'channel/channel_details.html', context)
     
-    
+def edit_channel_view(request, id):
+    get_channel = Channel.objects.get(id=id)
+    channel_form = ChannelForm(instance=get_channel)
+    if request.method == 'POST':
+        channel_form = ChannelForm(request.POST, instance=get_channel)
+        if channel_form.is_valid():
+            channel_form.save()
+            messages.success(request, "Successfully Edited Channel")
+            return redirect('show_channel')
+        else:
+            
+            messages.error(request, channel_form.errors)
+            return render(request, 'channel/create_channel.html', context={'channel_form':channel_form})
+    else:
+        
+        return render(request, 'channel/create_channel.html', context={'channel_form':channel_form})
+
+
+
+
+
+
+
 def delete_channel(request, id):
     get_channel = Channel.objects.get(id=id)
     get_channel.delete()
-    return redirect('show_channels')
+    return redirect('show_channel')
 
 def show_borrowers_in_network(request, id):
     borrowers = Borrower.objects.filter(tn=id)
