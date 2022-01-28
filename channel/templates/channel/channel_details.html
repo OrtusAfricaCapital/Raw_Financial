@@ -70,24 +70,26 @@
           <div class="row">
 				          <div class="col-md-6">           
 				            <dl class="row" style="padding-bottom: 10px;">
-				                <dd class="col-sm-4" style=" font-size: 20px; font-weight:bold;">{{channel_details.ChannelName}}</dd>
-				                <dt class="col-sm-8"></dt>
+                        <dt class="col-sm-8"><img src="{{channel_details.Logo.url}}" alt="" height="150" width="150">{{channel_details.ChannelName}}</dt>
+				                <dt class="col-sm-4" style=" font-size: 20px; font-weight:bold;"></dt>
+				                
 				                <dd class="col-sm-4">Phone Number:</dd>
-				                <dt class="col-sm-8">{{channel_details.PhoneNumber}}</dt> 
-                                <dd class="col-sm-4">Email:</dd>
-				                <dt class="col-sm-8">{{channel_details.EmailAddress}}</dt>             
+				                <dt class="col-sm-8">{{channel_details.PhoneNumber}}</dt>
+                        <dd class="col-sm-4">Email:</dd>
+				                <dt class="col-sm-8">{{channel_details.EmailAddress}}</dt> 
+                        <dd class="col-sm-4">Web Hook:</dd>
+				                <dt class="col-sm-8">{{channel_details.WebHook}}</dt>            
 				            </dl>
 				          </div>
 				          <div class="col-md-6">
 				            <dl class="row" style="padding-bottom: 10px;">                
 				                <dd class="col-sm-4">Short Description:</dd>
 				                <dt class="col-sm-8">{{channel_details.ShortDescription}}</dt>
-				                <dd class="col-sm-4">MonthlyInterestRate:</dd>
-				                <dt class="col-sm-8">{{investor_details.MonthlyInterestRate}}</dt>
-                                <dd class="col-sm-4">Verification Status:</dd>
-				                <dt class="col-sm-8">{{investor_details.VerificationStatus}}</dt> 
-                                <dd class="col-sm-4">InstitutionalStatus:</dd>
-				                <dt class="col-sm-8">{{investor_details.InstitutionalStatus}}</dt>            
+				                <dd class="col-sm-4">Deactivated On:</dd>
+				                <dt class="col-sm-8">{{channel_details.DeactivatedOn}}</dt>
+                        <dd class="col-sm-4">Api Key:</dd>
+				                <dt class="col-sm-8">{{channel_details.ApiKey}}</dt> 
+                                          
 				            </dl>
 				          </div>
 		        </div>
