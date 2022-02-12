@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'numpy',
     'drf_yasg2',
     'rest_framework.authtoken',
-    'background_task'
+   
     
 ]
 

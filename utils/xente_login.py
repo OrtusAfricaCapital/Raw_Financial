@@ -7,7 +7,7 @@ import uuid
 import pytz
 import time
 import requests
-from background_task import background
+
 
 
 api_key = settings.XENTE_API_KEY
