@@ -37,6 +37,7 @@ class LoanTransactions(models.Model):
     request_id = models.CharField(max_length=100)
     correlation_id = models.CharField(max_length=100)
     transaction_type = models.CharField(max_length=200)
+    transaction_status = models.CharField(max_length=200)
     transaction_created_on = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     

@@ -285,7 +285,7 @@ def payment_status_view(request, transaction_id, loan_uuid):
                 transaction_id = transaction_id,
                 request_id = request_id,
                 transaction_type = "Deposit",
-                trnsaction_status = status,
+                transaction_status = status,
                 transaction_created_on = created_at
             )
         
