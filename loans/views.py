@@ -50,11 +50,17 @@ def create_loan_view(request, id):
                 lf = loan_form.save(commit=False)
                 lf.borrower = borrower
                 lf.interest_rate = tn.MonthlyInterestRate
-                amount = loan_form.cleaned_data.get('amount')
+                loan_amount = loan_form.cleaned_data.get('principal_amount')
                 duration = loan_form.cleaned_data.get('loan_duration')
-                lf.save()
+               
                 
-
+                LoanRequest.objects.create(
+                    channel_id = channel,
+                    loan_amount = loan_amount,
+                    loan_purpose = "",
+                    loan_duration = duration
+                )
+                lf.save()
                 messages.success(request, "successfully created loan request")
                 return redirect('loan_borrowed', id=id)
             else:
@@ -362,8 +368,8 @@ def give_loan(request, uid):
         #disburse the credit through xente
         #response = xente_payment_MTN.create_payment_MTN(get_loan_request.loan_amount, loan_borrowed.phone_number, loan_borrowed.phone_number, loan_borrowed.email, loan_borrowed.phone_number)
         r=xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
-        print (r)
-        print(os.environ.get('XENTE_RESELLER_TOKEN'))
+        #print (r)
+        #print(os.environ.get('XENTE_RESELLER_TOKEN'))
         if r:
 
             url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/transactions"
@@ -402,15 +408,11 @@ def give_loan(request, uid):
                     created_at = data['createdOn']
                     #correlation_id = data['correlationId']
                     
-
-                    url_transactions = constants.base_url_reseller+"/api/v1/transactions/"+transaction_id+"?pageSize=20&pageNumber=1"
-
-                    response = requests.request("GET", url_transactions, headers=headers)
-                    
-                    
                     context = {
                             'loan_request':get_loan_request,
                             'loan_borrowed':loan_borrowed,
+                            'loan_status':True,
+                            'transaction_id':transaction_id
 
                         }
                     messages.success(request, message),
@@ -470,10 +472,11 @@ def give_loan_status(request, transaction_id, uid):
         print(result)
         
         if status == "PROCESSING":
-            
             context = {
                     'loan_request':get_loan_request,
                     'loan_borrowed':loan_borrowed,
+                    'loan_status':True,
+                    'transaction_id':transaction_id
                 }
             messages.warning(request, status_message)
             return render(request, 'loans/loan_request_details.html', context)
@@ -498,20 +501,33 @@ def give_loan_status(request, transaction_id, uid):
             context = {
                 'loan_request':get_loan_request,
                 'loan_borrowed':loan_borrowed,
+                'loan_status':True,
+                'transaction_id':transaction_id
             }
             messages.warning(request, status_message)
             return render(request, 'loans/loan_request_details.html', context)
         elif status == "FAILED":
-            
-
             context = {
                     'loan_request':get_loan_request,
                     'loan_borrowed':loan_borrowed,
+                    'loan_status':True,
+                    'transaction_id':transaction_id
                 }
-            messages.success(request, "Transaction Failed"),
+            messages.error(request, status_message),
             return render(request, 'loans/loan_request_details.html', context)
     else:
-        pass  
+        try:
+            result = response.json()
+            message = result['message']
+            context = {
+                    'loan_request':get_loan_request,
+                    'loan_borrowed':loan_borrowed,
+
+                }
+            messages.error(request, message),
+            return render(request, 'loans/loan_request_details.html', context)
+        except:
+            print(response.status_code) 
 
 @login_required(login_url='login')
 def loan_scoring(request, uid):

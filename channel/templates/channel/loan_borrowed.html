@@ -131,14 +131,24 @@
               <td>{{ fi.loan_release_date }}</td>
               <td>{{ fi.loan_duration }}</td>
               <td>{{ fi.loan_due_date }}</td>
-              <td>{{ fi.loan_status }}</td>
+              <td>
+                {% if fi.loan_status == "Paid" %} 
+                  <span class="bg bg-success">{{ fi.loan_status }}</span>
+                {% elif fi.loan_status == "Running" %}
+                  <span class="bg bg-warning">{{ fi.loan_status }}</span>
+                {% else %}
+                <span class="bg bg-error">{{ fi.loan_status }}</span>
+                {%endif%}
+              </td>
               
                 <td class="project-actions text-center">
+                     {% if fi.loan_status != "Paid" %}
                       <a class="btn btn-primary btn-sm" href="{% url 'payments' loan_uuid=fi.loan_uid %}" class="btn btn-primary">
                           <i class="fas fa-folder">
                           </i>
                           Record Payment
                       </a>
+                      {% endif %}
                       <!--<a class="btn btn-info btn-sm" href="{% url 'payment_status' transaction_id='asdfasdfsad' loan_uuid=fi.loan_uid  %}">
                           <i class="fas fa-pencil-alt">
                           </i>

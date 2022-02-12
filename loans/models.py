@@ -24,7 +24,7 @@ LOAN_REQUEST_STATUS = (
 
 LOAN_STATUS = (
    
-    ('Pending', 'Pending'),
+    
     ('Issued', 'Issued'),
     ('Paid','Paid'),
     ('Defaulted', 'Defaulted'),
@@ -49,7 +49,7 @@ class Loans(models.Model):
     interest_rate = models.FloatField()
     loan_duration = models.IntegerField()
     loan_due_date = models.DateField(editable=False)
-    loan_status = models.CharField(max_length=100, choices=LOAN_STATUS, default="Running")
+    loan_status = models.CharField(max_length=100, choices=LOAN_STATUS, default="Issued")
 
 
     def save(self, *args, **kwargs):
