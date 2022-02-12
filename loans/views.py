@@ -18,6 +18,8 @@ import requests
 from django.conf import settings
 import uuid,  os
 import time
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 #from numpy import impt
 
 # Create your views here.
@@ -31,12 +33,12 @@ def request_uid():
     pass
 
 
-class LoanView(ListView):
+
+class LoanView(LoginRequiredMixin, ListView):
     model = Loans
     template_name = 'loans/show_loans.html'
 
-
-
+@login_required(login_url='login')
 def create_loan_view(request, id):
     try:
         borrower = Borrower.objects.get(id=id)
@@ -70,7 +72,7 @@ def create_loan_view(request, id):
         return redirect('loan_borrowed', id=id)
 
 
-
+@login_required(login_url='login')
 def loan_details(request, id):
     loan_borrowed = Loans.objects.get(id=id)
     #principal_sum = Loans.objects.(id=id).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
@@ -90,7 +92,7 @@ def loan_details(request, id):
     }
     return render(request, 'loans/loan_details.html', context)
 
-
+@login_required(login_url='login')
 def edit_loan_view(request, loan_uid):
     context= {}
     get_loan = Loans.objects.get(loan_uid=loan_uid)
@@ -111,6 +113,7 @@ def edit_loan_view(request, loan_uid):
         
         return render(request, 'loans/edit_loan.html', context)
 
+@login_required(login_url='login')
 def delete_loan_view(request, loan_uid):
     get_loan = Loans.objects.get(loan_uid=loan_uid)
     get_loan.delete()
@@ -118,7 +121,7 @@ def delete_loan_view(request, loan_uid):
     return redirect('show_loans')
 
 
-
+@login_required(login_url='login')
 def payment_view(request, loan_uuid):
     #get_loan
     get_loan = Loans.objects.get(loan_uid=loan_uuid)
@@ -230,6 +233,7 @@ def payment_view(request, loan_uuid):
             }
         return render(request, 'loans/create_payment.html', context)
 
+@login_required(login_url='login')
 def payment_status_view(request, transaction_id, loan_uuid):
     payment_form = PaymentForm()
     get_loan = Loans.objects.get(loan_uid=loan_uuid)
@@ -323,6 +327,7 @@ def payment_status_view(request, transaction_id, loan_uuid):
         
     return redirect('loan_borrowed', id=get_loan.borrower.id)
 
+@login_required(login_url='login')
 def get_loan_requests(request):
     get_loan_request = LoanRequest.objects.all()
     context = {
@@ -330,6 +335,7 @@ def get_loan_requests(request):
     }
     return render(request, 'loans/loan_requests.html', context)
 
+@login_required(login_url='login')
 def loan_request_details(request, uid):
     try:
         get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
@@ -343,6 +349,7 @@ def loan_request_details(request, uid):
     except LoanRequest.DoesNotExist:
         pass
 
+@login_required(login_url='login')
 def give_loan(request, uid):
     try:
         get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
@@ -435,7 +442,8 @@ def give_loan(request, uid):
         
     except LoanRequest.DoesNotExist:
         pass
-        
+
+@login_required(login_url='login')       
 def give_loan_status(request, transaction_id, uid):
     get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
     loan_borrowed = Borrower.objects.get(channel_borrower_uid=get_loan_request.channel_borrower_uid)
@@ -504,6 +512,7 @@ def give_loan_status(request, transaction_id, uid):
     else:
         pass  
 
+@login_required(login_url='login')
 def loan_scoring(request, uid):
     context = {}
     try:
