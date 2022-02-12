@@ -17,7 +17,9 @@ base_url_payment = settings.XENTE_BASE_URL_PAYMENT
 
 base_url_reseller = settings.XENTE_BASE_URL_RESELLER
 
-request_uid = str(uuid.uuid4)
+request_uid = str(uuid.uuid4())
+
+time = 300
 
 #header variables
 header_api_key = settings.XENTE_API_KEY

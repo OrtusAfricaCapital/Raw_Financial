@@ -17,6 +17,7 @@ import json
 import requests
 from django.conf import settings
 import uuid,  os
+import time
 #from numpy import impt
 
 # Create your views here.
@@ -145,6 +146,8 @@ def payment_view(request, loan_uuid):
 
             #use xente
             xente_login.get_token(constants.api_key, constants.api_password)
+            
+            
             #print(r)
 
             
@@ -176,86 +179,23 @@ def payment_view(request, loan_uuid):
                     #print(response.json())
                     result = result_method.json()
                     data = result['data']
-                    request_id = data['requestId']
                     message = data['message']
                     transaction_id = data['transactionId']
                     created_at = data['createdOn']
                     #correlation_id = data['correlationId']
-                    url_transactions_payment = constants.base_url_reseller+"/api/v1/transactions/"+transaction_id+"?pageSize=20&pageNumber=1"
-
-                    response = requests.request("GET", url_transactions_payment, headers=headers)
-
-                    if response.status_code == 200:
-                        result = response.json()
-                        result_data = result['data']
-                        status  = result_data['status']
-                        status_message = result_data['statusMessage']
-                        print(result)
-                        
-                        if status == "PROCESSING":
-                            LoanTransactions.objects.create(
-                                loan_id = get_loan,
-                                transaction_id = transaction_id,
-                                request_id = request_id,
-                                transaction_type = "Deposit",
-                                trnsaction_status = status,
-                                transaction_created_on = created_at
-                            )
-                            context = {
-                                'loan_borrowed':loan_borrowed,
-                                'total_borrowed': principal_sum,
-                                'id':get_loan.borrower.id
-                                }
-                            messages.success(request, message),
-                            return redirect('loan_borrowed', id=get_loan.borrower.id)
-
-                        if status == "SUCCESS":
-                            LoanTransactions.objects.create(
-                                loan_id = get_loan,
-                                transaction_id = transaction_id,
-                                request_id = request_id,
-                                transaction_type = "Deposit",
-                                trnsaction_status = status,
-                                transaction_created_on = created_at
-                            )
-                        
-                            Payment.objects.create(
-                                user = request.user,
-                                loan_id = get_loan,
-                                borrower_id=get_loan.borrower,
-                                amount_paid=amount,
-                                when_paid=date
-                            )
-                            context = {
-                                'loan_borrowed':loan_borrowed,
-                                'total_borrowed': principal_sum,
-                                'id':get_loan.borrower.id
-                                }
-                            messages.warning(request, "Payment Successfully collected")
-                            return redirect('loan_borrowed', id=get_loan.borrower.id)
-                        elif status == "FAILED":
-                            
-
-                            context = {
-                                'loan_borrowed':loan_borrowed,
-                                'total_borrowed': principal_sum,
-                                'id':get_loan.borrower.id
-                                }
-                            messages.success(request, "Transaction Failed"),
-                            return redirect('loan_borrowed', id=get_loan.borrower.id)
-                    
-                    
-                   
-                    
                     
                     context = {
-                            'loan_borrowed':loan_borrowed,
-                            'total_borrowed': principal_sum,
-                            'id':get_loan.borrower.id
-                        }
-                    messages.success(request, status_message),
-                    return redirect('loan_borrowed', id=get_loan.borrower.id)
-                    #return render(request, 'channel/loan_borrowed.html', context)
+                        'loan_details':get_loan,
+                        'form':payment_form,
+                        'transaction_id':transaction_id
+                    }
+                    
+                    Loans.objects.filter(loan_uid=loan_uuid).update(loan_status="Processing")
+                    messages.success(request, message)
+                    
+                    
+                    #return redirect('loan_borrowed', id=get_loan.borrower.id)
+                    return render(request, 'loans/create_payment.html', context)
                 except ValueError:
                     result = result_method.json()
                     message = data['message']
@@ -290,6 +230,98 @@ def payment_view(request, loan_uuid):
             }
         return render(request, 'loans/create_payment.html', context)
 
+def payment_status_view(request, transaction_id, loan_uuid):
+    payment_form = PaymentForm()
+    get_loan = Loans.objects.get(loan_uid=loan_uuid)
+    
+    loan_borrowed = Loans.objects.filter(borrower=get_loan.borrower)
+    principal_sum = Loans.objects.filter(borrower=get_loan.borrower).aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
+
+    xente_login.get_token(constants.api_key, constants.api_password)
+    #print(os.environ.get('XENTE_TOKEN'))
+
+    headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY, 
+                    'X-Date':str(datetime.datetime.now(timezone.utc)), 
+                    'X-Correlation-ID':'uuid.uuid4()',
+                    'Authorization': "Bearer "+str(os.environ.get('XENTE_TOKEN')),
+                    'Content-Type': 'application/json'}
+    url_transactions_payment = constants.base_url_payment+"/api/v1/transactions/"+transaction_id+"?pageSize=20&pageNumber=1"
+
+    response = requests.request("GET", url_transactions_payment, headers=headers)
+
+    if response.status_code == 200:
+        result = response.json()
+        #print(result)
+        result_data = result['data']
+        status  = result_data['status']
+        request_id = result_data['requestReference']
+        created_at = result_data['createdOn']
+        status_message = result_data['statusMessage']
+        #print(result)
+        
+        if status == "PROCESSING":
+            """
+            LoanTransactions.objects.create(
+                loan_id = get_loan,
+                transaction_id = transaction_id,
+                request_id = request_id,
+                transaction_type = "Deposit",
+                trnsaction_status = status,
+                transaction_created_on = created_at
+            )
+            """
+            context = {
+                        'loan_details':get_loan,
+                        'form':payment_form,
+                        'transaction_id':transaction_id
+                    }
+                    
+            messages.success(request, status_message),
+            return render(request, 'loans/create_payment.html', context)
+
+        elif status == "COMMITTED":
+            LoanTransactions.objects.create(
+                loan_id = get_loan,
+                transaction_id = transaction_id,
+                request_id = request_id,
+                transaction_type = "Deposit",
+                trnsaction_status = status,
+                transaction_created_on = created_at
+            )
+        
+            Payment.objects.create(
+                user = request.user,
+                loan_id = get_loan,
+                borrower_id=get_loan.borrower,
+                amount_paid=get_loan.loan_amount,
+                when_paid=created_at
+            )
+            messages.warning(request, status_message)
+            return redirect('loan_borrowed', id=get_loan.borrower.id)
+        elif status == "FAILED":
+            messages.success(request, status_message),
+            return redirect('loan_borrowed', id=get_loan.borrower.id)
+    else:
+        try:
+            result = response.json()
+            message = result['message']
+            code = str(response.status_code)
+            context = {
+                    'loan_borrowed':loan_borrowed,
+                    'total_borrowed': principal_sum,
+                    'id':get_loan.borrower.id
+
+                }
+            messages.error(request, message + code)
+            return redirect('loan_borrowed', id=get_loan.borrower.id)
+        except ValueError:
+           
+            code = str(response.status_code)
+            messages.error(request, code),
+            return redirect('loan_borrowed', id=get_loan.borrower.id)
+     
+        
+    return redirect('loan_borrowed', id=get_loan.borrower.id)
 
 def get_loan_requests(request):
     get_loan_request = LoanRequest.objects.all()
@@ -366,52 +398,7 @@ def give_loan(request, uid):
                     url_transactions = constants.base_url_reseller+"/api/v1/transactions/"+transaction_id+"?pageSize=20&pageNumber=1"
 
                     response = requests.request("GET", url_transactions, headers=headers)
-                    if response.status_code == 200:
-                        result = response.json()
-                        result_data = result['data']
-                        status  = result_data['status']
-                        print(result)
-                        
-                        if status == "PROCESSING":
-                            
-                            context = {
-                                    'loan_request':get_loan_request,
-                                    'loan_borrowed':loan_borrowed,
-                                }
-                            messages.warning(request, "Processing transacion")
-                            return render(request, 'loans/loan_request_details.html', context)
-
-                        if status == "SUCCESS":
-                            create_loan=Loans.objects.create(
-                                    borrower=loan_borrowed,
-                                    principal_amount=get_loan_request.loan_amount,
-                                    loan_release_date=datetime.datetime.now(timezone.utc),
-                                    interest_rate=loan_borrowed.tn.MonthlyInterestRate,
-                                    loan_duration = get_loan_request.loan_duration,
-                                    loan_status="Issued")
-
-                            LoanTransactions.objects.create(
-                                    loan_id = create_loan,
-                                    transaction_id = transaction_id,
-                                    request_id = request_id,
-                                    transaction_type = "Withdraw",
-                                    transaction_created_on = created_at
-                                )
-                            context = {
-                                'loan_request':get_loan_request,
-                                'loan_borrowed':loan_borrowed,
-                            }
-                            messages.warning(request, "Loan Successfully Issued")
-                            return render(request, 'loans/loan_request_details.html', context)
-                        elif status == "FAILED":
-                            
-
-                            context = {
-                                    'loan_request':get_loan_request,
-                                    'loan_borrowed':loan_borrowed,
-                                }
-                            messages.success(request, "Transaction Failed"),
-                            return render(request, 'loans/loan_request_details.html', context)
+                    
                     
                     context = {
                             'loan_request':get_loan_request,
@@ -449,7 +436,73 @@ def give_loan(request, uid):
     except LoanRequest.DoesNotExist:
         pass
         
-    
+def give_loan_status(request, transaction_id, uid):
+    get_loan_request = LoanRequest.objects.get(loan_request_uid=uid)
+    loan_borrowed = Borrower.objects.get(channel_borrower_uid=get_loan_request.channel_borrower_uid)
+
+    xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
+
+    headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY_RESELLER, 
+                    'X-Date':str(datetime.datetime.now(timezone.utc)), 
+                    'X-Correlation-ID':'uuid.uuid4()',
+                    'Authorization': "Bearer "+str(os.environ.get('XENTE_RESELLER_TOKEN')),
+                    'Content-Type': 'application/json'}
+    url_transactions = constants.base_url_reseller+"/api/v1/transactions/"+transaction_id+"?pageSize=20&pageNumber=1"
+
+    response = requests.request("GET", url_transactions, headers=headers)
+
+    if response.status_code == 200:
+        result = response.json()
+        result_data = result['data']
+        status  = result_data['status']
+        status_message = result_data['statusMessage']
+        request_id = result_data['requestReference']
+        created_at = result_data['createdOn']
+        print(result)
+        
+        if status == "PROCESSING":
+            
+            context = {
+                    'loan_request':get_loan_request,
+                    'loan_borrowed':loan_borrowed,
+                }
+            messages.warning(request, status_message)
+            return render(request, 'loans/loan_request_details.html', context)
+
+        elif status == "SUCCESS":
+            """
+            create_loan=Loans.objects.create(
+                    borrower=loan_borrowed,
+                    principal_amount=get_loan_request.loan_amount,
+                    loan_release_date=datetime.datetime.now(timezone.utc),
+                    interest_rate=loan_borrowed.tn.MonthlyInterestRate,
+                    loan_duration = get_loan_request.loan_duration,
+                    loan_status="Issued")
+            """
+            LoanTransactions.objects.create(
+                    loan_id = create_loan,
+                    transaction_id = transaction_id,
+                    request_id = request_id,
+                    transaction_type = "Withdraw",
+                    transaction_created_on = created_at
+                )
+            context = {
+                'loan_request':get_loan_request,
+                'loan_borrowed':loan_borrowed,
+            }
+            messages.warning(request, status_message)
+            return render(request, 'loans/loan_request_details.html', context)
+        elif status == "FAILED":
+            
+
+            context = {
+                    'loan_request':get_loan_request,
+                    'loan_borrowed':loan_borrowed,
+                }
+            messages.success(request, "Transaction Failed"),
+            return render(request, 'loans/loan_request_details.html', context)
+    else:
+        pass  
 
 def loan_scoring(request, uid):
     context = {}

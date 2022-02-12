@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'bootstrap_modal_forms',
     'numpy',
     'drf_yasg2',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'background_task'
     
 ]
 
@@ -211,19 +212,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-XENTE_API_KEY = config('XENTE_API_KEY', default='wdwe')
+#XENTE_API_KEY = config('XENTE_API_KEY', default='wdwe')
+XENTE_API_KEY = '82B3F2FEAF6B47AB99CEE3ED07D61419'
 
-XENTE_API_KEY_RESELLER = config('XENTE_API_KEY_RESELLER', default='wdwe')
+XENTE_API_KEY_RESELLER = 'BC52D6E0D7C042308EABBBFD6D2AFB9C'
 
-ACCOUNT_ID_PAYMENTS = config('ACCOUNT_ID_PAYMENTS', default='123')
+ACCOUNT_ID_PAYMENTS = '0E33CBB128A84199A21ED2E8FFD4CEC2_256775022805'
 
-ACCOUNT_ID_RESELLER = config('ACCOUNT_ID_RESELLER', default='123')
+ACCOUNT_ID_RESELLER = 'A8A22A45FC6F4B21A9D5284427032A5E_256701738230'
 
 XENTE_BASE_URL_PAYMENT="https://payments.xente.co"
 
 XENTE_BASE_URL_RESELLER="https://reseller.xente.co"
 
-SUBSCRIPTION_ID=config('SUBSCRIPTION_ID', default='123')
+SUBSCRIPTION_ID='05EE281DED104FDEA59AC923985D3604V2'
 
-XENTE_PASSWORD=config('XENTE_PASSWORD', default='123')
+XENTE_PASSWORD='XentE@Test1234'
+
+TIME_ZONE = 'Africa/Kampala'
 

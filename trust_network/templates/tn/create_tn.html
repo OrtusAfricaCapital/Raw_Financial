@@ -48,7 +48,7 @@
       <div class="container-fluid">
         <div class="row">
           <!-- left column -->
-          <div class="col-md-9">
+          <div class="col-md-12">
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
@@ -78,70 +78,80 @@
               <form role="form" method="post" enctype="multipart/form-data"> {% csrf_token %}
                 
                 <div class="card-body">
-                  <div class="form-group">
-                    <label>Channel</label>
-                    <select class="form-control" name="channel">
-                      {% for value, name in tn_form.fields.channel.choices %}
-                          <option value="{{ value }}">{{ name }}</option>
-                      {% endfor %}   
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label>Trust Network Name</label>
-                    <input type="text" class="form-control" placeholder="" 
-                    name="Name" value="">
-                  </div>
-                  <div class="form-group">
-                    <label>Institutional Limit</label>
-                    <input type="text" class="form-control" placeholder="" 
-                    name="InstitutionalLimit" value="">
-                  </div>
-                  <div class="form-group">
-                    <label>Revolving Limit</label>
-                    <input type="text" class="form-control" placeholder="" 
-                    name="RevolvingLimit" value="">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Channel</label>
+                        <select class="form-control" name="channel">
+                          {% for value, name in tn_form.fields.channel.choices %}
+                              <option value="{{ value }}">{{ name }}</option>
+                          {% endfor %}   
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Trust Network Name</label>
+                        <input type="text" class="form-control" placeholder="" 
+                        name="Name" value="">
+                      </div>
+                      <div class="form-group">
+                        <label>Institutional Limit</label>
+                        <input type="text" class="form-control" placeholder="" 
+                        name="InstitutionalLimit" value="">
+                      </div>
+                      <div class="form-group">
+                        <label>Revolving Limit</label>
+                        <input type="text" class="form-control" placeholder="" 
+                        name="RevolvingLimit" value="">
+                      </div>
+                      
+                      <div class="form-group">
+                        <label>Monthly Interest Rate</label>
+                        <input type="text" class="form-control" placeholder="" id="monthly_rate"
+                        name="MonthlyInterestRate" onkeyup="calculate_interest()">
+                      </div>
+                      <div class="form-group">
+                        <label>Daily Interest Rate</label>
+                        <input type="text" class="form-control" placeholder="" 
+                         id="daily_rate"  name="DailyInterestRate" value="">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      
+                      <div class="form-group">
+                        <label>Logo</label>
+                        <input type="file" class="form-control" placeholder="" 
+                        name="Logo" value="">
+                      </div>
+                      <div class="form-group">
+                        <label>Trust Network Category</label>
+                        <input type="text" class="form-control" placeholder="" 
+                        name="TrustNetworkCategory" value="{{tn_form.TrustNetworkCategory.value}}">
+                      </div>
+                      <div class="form-group">
+                        <label>Requires Approval</label>
+                        <select class="form-control" name="RequiresApproval">
+                          {% for value, name in tn_form.fields.RequiresApproval.choices %}
+                              <option value="{{ value }}">{{ name }}</option>
+                          {% endfor %}   
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Required Approval</label>
+                        <select class="form-control" name="RequiredApproval">
+                          {% for value, name in tn_form.fields.RequiredApproval.choices %}
+                              <option value="{{ value }}">{{ name }}</option>
+                          {% endfor %}   
+                        </select>
+                      <div class="form-group">
+                        <label>Trust Network Domains</label>
+                        <input type="text" class="form-control" placeholder="" 
+                        name="Domains" value="">
+                      </div>
+                    </div>
                   </div>
                   
-                  <div class="form-group">
-                    <label>Monthly Interest Rate</label>
-                    <input type="text" class="form-control" placeholder="" id="monthly_rate"
-                    name="MonthlyInterestRate" onkeyup="calculate_interest()">
-                  </div>
-                  <div class="form-group">
-                    <label>Daily Interest Rate</label>
-                    <input type="text" class="form-control" placeholder="" 
-                     id="daily_rate"  name="DailyInterestRate" value="">
-                  </div>
-                  <div class="form-group">
-                    <label>Logo</label>
-                    <input type="file" class="form-control" placeholder="" 
-                    name="Logo" value="">
-                  </div>
-                  <div class="form-group">
-                    <label>Trust Network Category</label>
-                    <input type="text" class="form-control" placeholder="" 
-                    name="TrustNetworkCategory" value="{{tn_form.TrustNetworkCategory.value}}">
-                  </div>
-                  <div class="form-group">
-                    <label>Requires Approval</label>
-                    <select class="form-control" name="RequiresApproval">
-                      {% for value, name in tn_form.fields.RequiresApproval.choices %}
-                          <option value="{{ value }}">{{ name }}</option>
-                      {% endfor %}   
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label>Required Approval</label>
-                    <select class="form-control" name="RequiredApproval">
-                      {% for value, name in tn_form.fields.RequiredApproval.choices %}
-                          <option value="{{ value }}">{{ name }}</option>
-                      {% endfor %}   
-                    </select>
-                  <div class="form-group">
-                    <label>Trust Network Domains</label>
-                    <input type="text" class="form-control" placeholder="" 
-                    name="Domains" value="">
-                  </div>
+                  
+                  
                   
                 </div>
                 

@@ -4,8 +4,11 @@ from datetime import timezone
 from django.conf import settings
 import json
 import uuid
-
+import pytz
+import time
 import requests
+from background_task import background
+
 
 api_key = settings.XENTE_API_KEY
 api_key_reseller = settings.XENTE_API_KEY_RESELLER
@@ -16,7 +19,7 @@ base_url_reseller = settings.XENTE_BASE_URL_RESELLER
 
 #header variables
 header_api_key = settings.XENTE_API_KEY
-header_date = str(datetime.datetime.now(timezone.utc))
+header_date = str(datetime.datetime.now(pytz.timezone(settings.TIME_ZONE)))
 header_correlation_id = 'uuid.uuid4()'
 header_content_type = 'application/json'
 
@@ -33,35 +36,48 @@ headers_reseller={'X-ApiAuth-ApiKey':api_key_reseller,
     'X-Correlation-ID':header_correlation_id, 
     'Content-Type':header_content_type}   
 
+#@background(schedule=300)
 def get_token(api_key, api_password):
 
     payload = json.dumps({'apiKey':api_key, 'password':api_password})
-    header = headers
+    headers={'X-ApiAuth-ApiKey':header_api_key, 
+        'X-Date':str(datetime.datetime.now(timezone.utc)), 
+        'X-Correlation-ID':header_correlation_id, 
+        'Content-Type':header_content_type}
     url = base_url_payment+'/api/v1/Auth/login'
-    response = requests.request("POST", url, data=payload, headers=header)
-    if response.status_code == 200:
+    response = requests.request("POST", url, data=payload, headers=headers)
+    if response.status_code != 200:
+        result = False
+    else:
         response = response.json()
-        result = True
         os.environ['XENTE_TOKEN'] = response['token']
+        time = 300
+        result=True
+
+        print(response)
+
 
     
         
 
-    return response
+    return result
 
 def get_token_reseller(api_key, api_password):
     payload = json.dumps({'apiKey':api_key, 'password':api_password})
     url = base_url_reseller+'/api/v1/Auth/login?includeRefereshToken=true'
-    header = headers_reseller
-    response = requests.request("POST", url, data=payload, headers=header)
+    headers_reseller={'X-ApiAuth-ApiKey':api_key_reseller, 
+        'X-Date':header_date, 
+        'X-Correlation-ID':header_correlation_id, 
+        'Content-Type':header_content_type}
+    response = requests.request("POST", url, data=payload, headers=headers_reseller)
     if response.status_code == 200:
-        response = response.json()
+        response_data = response.json()
         result = True
-        os.environ['XENTE_RESELLER_TOKEN'] = response['token']
-        os.environ['REFRESH_XENTE_TOKEN'] = response['refreshToken']
+        os.environ['XENTE_RESELLER_TOKEN'] = response_data['token']
+        os.environ['REFRESH_XENTE_TOKEN'] = response_data['refreshToken']
     else:
         result = False
-        print(response)
+        print(response.text)
 
     return result
 

@@ -75,7 +75,7 @@ class LoanRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__ (self):
-        return self.loan_request_uid
+        return str(self.loan_request_uid)
 
 class LoanRequestStatus(models.Model):
     loan_id = models.ForeignKey(LoanRequest, related_name="loan_request", on_delete=models.CASCADE, null=True, blank=True)

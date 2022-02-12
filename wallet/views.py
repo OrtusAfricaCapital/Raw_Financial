@@ -49,8 +49,8 @@ def show_wallet(request):
     transaction_data = []
     #get credit fund
     
-    xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
-    #print (r)
+    r = xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
+    print (r)
     #print(os.environ.get('XENTE_RESELLER_TOKEN'))
 
     url = settings.XENTE_BASE_URL_RESELLER+"/api/v1/Accounts/"+account_id+"/"+subscription_id+"/Balances"

@@ -113,6 +113,10 @@
 
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary">Submit</button>
+                  {%if transaction_id %}
+                    <a class="btn btn-primary" href="{% url 'payment_status' transaction_id=transaction_id loan_uuid=loan_details.loan_uid %}">Check Payment status</a>
+                  {% endif %}
+
                 </div>
               </form>
             </div>
