@@ -193,7 +193,7 @@ def payment_view(request, loan_uuid):
                         'transaction_id':transaction_id
                     }
                     
-                    Loans.objects.filter(loan_uid=loan_uuid).update(loan_status="Processing")
+                    #Loans.objects.filter(loan_uid=loan_uuid).update(loan_status="Processing")
                     messages.success(request, message)
                     
                     
@@ -300,7 +300,8 @@ def payment_status_view(request, transaction_id, loan_uuid):
                 amount_paid=get_loan.principal_amount,
                 when_paid=created_at
             )
-            messages.warning(request, status_message)
+            Loans.objects.filter(loan_uid=loan_uuid).update(loan_status="Paid")
+            messages.success(request, status_message)
             return redirect('loan_borrowed', id=get_loan.borrower.id)
         elif status == "FAILED":
             messages.success(request, status_message),
