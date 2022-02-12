@@ -293,7 +293,7 @@ def payment_status_view(request, transaction_id, loan_uuid):
                 user = request.user,
                 loan_id = get_loan,
                 borrower_id=get_loan.borrower,
-                amount_paid=get_loan.loan_amount,
+                amount_paid=get_loan.principal_amount,
                 when_paid=created_at
             )
             messages.warning(request, status_message)
