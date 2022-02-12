@@ -94,7 +94,7 @@ class Payment(models.Model):
     loan_id = models.ForeignKey(Loans, on_delete=models.CASCADE)
     borrower_id = models.ForeignKey(Borrower, on_delete=models.CASCADE)
     amount_paid = models.IntegerField()
-    when_paid = models.DateField()
+    when_paid = models.DateTimeField()
     trnsaction_status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
