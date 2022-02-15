@@ -70,7 +70,11 @@
           <div class="row">
 				          <div class="col-md-6">           
 				            <dl class="row" style="padding-bottom: 10px;">
-                        <dt class="col-sm-8"><img src="{{channel_details.Logo.url}}" alt="" height="150" width="150">{{channel_details.ChannelName}}</dt>
+                        <dt class="col-sm-8">
+                          {% if channel_details.Logo.url %}
+                            <img src="{{channel_details.Logo.url}}" alt="" height="150" width="150">
+                          {% endif %}
+                          {{channel_details.ChannelName}}</dt>
 				                <dt class="col-sm-4" style=" font-size: 20px; font-weight:bold;"></dt>
 				                
 				                <dd class="col-sm-4">Phone Number:</dd>

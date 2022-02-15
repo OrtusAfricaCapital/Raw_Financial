@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'crispy_forms',
     'authentication',
@@ -55,9 +54,7 @@ INSTALLED_APPS = [
     'bootstrap_modal_forms',
     'numpy',
     'drf_yasg2',
-    'rest_framework.authtoken',
-   
-    
+    'rest_framework.authtoken', 
 ]
 
 
@@ -65,7 +62,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'authentication.authentication.ExpiringTokenAuthentication',
-
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
