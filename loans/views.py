@@ -12,7 +12,7 @@ from django.db.models import Sum
 from wallet.models import LoanTransactions
 from .forms import *
 from .models import *
-from utils import calculations, get_transaction_reseller, xente_payment_MTN, xente_login, constants
+from utils import calculations, get_transaction_reseller, xente_payment_MTN, xente_login, constants, disburse_loan
 import json
 import requests
 from django.conf import settings
@@ -52,17 +52,32 @@ def create_loan_view(request, id):
                 lf.interest_rate = tn.MonthlyInterestRate
                 loan_amount = loan_form.cleaned_data.get('principal_amount')
                 duration = loan_form.cleaned_data.get('loan_duration')
-               
-                
-                LoanRequest.objects.create(
-                    channel_id = channel,
-                    loan_amount = loan_amount,
-                    loan_purpose = "",
-                    loan_duration = duration
-                )
-                lf.save()
-                messages.success(request, "successfully created loan request")
-                return redirect('loan_borrowed', id=id)
+
+
+                xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
+
+                g = disburse_loan.give_loan(loan_amount, borrower.phone_number, borrower.email, borrower.phone_number,borrower.phone_number)
+                if g:
+                    """
+                    LoanRequest.objects.create(
+                        channel_id = channel,
+                        loan_amount = loan_amount,
+                        loan_purpose = "",
+                        loan_duration = duration
+                    )
+                    """
+                    lf.save()
+                    context = {
+                        'loan_form':loan_form,
+                        'borrower':borrower,
+                        'transaction_id':g[2]
+                    }
+                    messages.success(request, g[1])
+                    return render(request, 'loans/create_loan.html', context)
+                else:
+                    messages.errors(request, g[1])
+                    return redirect('loan_borrowed', id=id)
+
             else:
                 loan_form = LoanForm()
                 messages.error(request, "oops, something went wrong")
@@ -77,6 +92,9 @@ def create_loan_view(request, id):
     except Borrower.DoesNotExist:
         return redirect('loan_borrowed', id=id)
 
+
+def disbursment_status_view(request, transaction_id, id):
+    pass
 
 @login_required(login_url='login')
 def loan_details(request, id):

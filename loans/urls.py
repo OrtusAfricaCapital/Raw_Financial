@@ -14,7 +14,9 @@ urlpatterns = [
     path('edit_loan/<str:loan_uid>/', edit_loan_view, name="edit_loan"),
     path('delete_loan/<str:loan_uid>/', delete_loan_view, name="delete_loan"),
     path('payment_status/<str:transaction_id>/<str:loan_uuid>/', payment_status_view, name="payment_status"),
-     path('give_loan_status/<str:transaction_id>/<str:uid>/', give_loan_status, name="give_loan_status"),
+    path('give_loan_status/<str:transaction_id>/<str:uid>/', give_loan_status, name="give_loan_status"),
+    path('disbursment_status/<str:transaction_id>/<int:id>', disbursment_status_view, name="disbursment_status"),
+     
 
     #api
     path('api/loan_request/',loan_request, name="loan_request"),
