@@ -62,4 +62,14 @@ def give_loan(amount, customer_id, email, customer_phone, customer_reference):
 
 
 def check_status(transaction_id):
-    pass
+    url = settings.XENTE_BASE_URL_RESELLER+"api/v1/transactions/"+transaction_id
+
+    headers={'X-ApiAuth-ApiKey':settings.XENTE_API_KEY_RESELLER, 
+            'X-Date':str(datetime.datetime.now(timezone.utc)), 
+            'X-Correlation-ID':'uuid.uuid4()',
+            'Authorization': "Bearer "+str(os.environ.get('XENTE_RESELLER_TOKEN')),
+            'Content-Type': 'application/json'}
+
+    request = requests.request("GET", url, headers=headers, params={'pageSize':20, 'pageNumber':1})
+
+    return print(request.text)

@@ -94,7 +94,23 @@ def create_loan_view(request, id):
 
 
 def disbursment_status_view(request, transaction_id, id):
-    pass
+
+    borrower = Borrower.objects.get(id=id)
+
+    loan_form = LoanForm() 
+    xente_login.get_token_reseller('BC52D6E0D7C042308EABBBFD6D2AFB9C', 'Raw#ortus2022')
+
+    disburse_loan.check_status(transaction_id)
+
+    context = {
+        'loan_form':loan_form,
+        'borrower':borrower,
+        'transaction_id':transaction_id
+    }
+    messages.success(request, g[1])
+    return render(request, 'loans/create_loan.html', context)
+
+    
 
 @login_required(login_url='login')
 def loan_details(request, id):
