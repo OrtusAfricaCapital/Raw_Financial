@@ -3,12 +3,15 @@ from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from .forms import *
 from .models import *
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class BorrowerView(ListView):
+class BorrowerView(LoginRequiredMixin, ListView):
     model = Borrower
     template_name = 'borrower/show_borrower.html'
 
+@login_required(login_url='login')
 def create_borrower(request):
     context = {}
     b_form = BorrowersForm()
@@ -26,7 +29,7 @@ def create_borrower(request):
 
 
 
-
+@login_required(login_url='login')
 def create_borrower_view(request, id):
     try:
         trust_network = TrustNetwork.objects.get(id=id)
@@ -51,7 +54,7 @@ def create_borrower_view(request, id):
         return redirect('channel_borrowers', id=id)
 
 
-
+@login_required(login_url='login')
 def edit_borrower_view(request, id):
     try:
         get_borrower = Borrower.objects.get(id=id)
@@ -71,6 +74,8 @@ def edit_borrower_view(request, id):
         messages.error(request, "oops, Borrower Doesn't Exist")
         return redirect('edit_borrower', id=id)
 
+        
+@login_required(login_url='login')
 def delete_view(reqeuest, id):
     get_borrower = Borrower.objects.get(id=id)
     get_borrower.delete()

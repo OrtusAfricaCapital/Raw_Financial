@@ -11,12 +11,15 @@ from borrowers.models import *
 from loans.models import *
 from loans.forms import *
 from utils import calculations
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class ChannelView(ListView):
+class ChannelView(LoginRequiredMixin, ListView):
     model = Channel
     template_name = 'channel/show_channel.html'
 
+@login_required(login_url='login')
 def channel_view(request):
     context = {}
     if request.method == 'POST':
@@ -33,6 +36,7 @@ def channel_view(request):
         channel_form = ChannelForm()
         return render(request, 'channel/create_channel.html', context={'channel_form':channel_form})
 
+@login_required(login_url='login')
 def channel_details(request, id):
     total_loan_amount = 0
     channel_details = get_object_or_404(Channel, pk=id)
@@ -57,7 +61,8 @@ def channel_details(request, id):
         'total_amount': total_loan_amount + intrest_rate
     }
     return render(request, 'channel/channel_details.html', context)
-    
+
+@login_required(login_url='login')  
 def edit_channel_view(request, id):
     get_channel = Channel.objects.get(id=id)
     channel_form = ChannelForm(instance=get_channel)

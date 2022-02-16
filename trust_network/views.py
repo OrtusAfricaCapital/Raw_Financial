@@ -8,12 +8,16 @@ from loans.models import Loans
 from .models import *
 from .forms import *
 from utils import calculations
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 # Create your views here.
-class TrustNetworkView(ListView):
+class TrustNetworkView(LoginRequiredMixin, ListView):
     model = TrustNetwork
     template_name = 'tn/show_tn.html'
 
+@login_required(login_url='login')
 def create_tn_view(request):
     context = {}
     if request.method == 'POST':
@@ -32,6 +36,9 @@ def create_tn_view(request):
         tn_form = TrustNetworkForm()
         return render(request, 'tn/create_tn.html', context={'tn_form':tn_form})
 
+
+
+@login_required(login_url='login')
 def edit_tn_view(request, id):
     get_tn = TrustNetwork.objects.get(id=id)
     if request.method == 'POST':
@@ -50,7 +57,7 @@ def edit_tn_view(request, id):
         tn_form = TrustNetworkForm(instance=get_tn)
         return render(request, 'tn/edit_tn.html', context={'tn_form':tn_form})
 
-
+@login_required(login_url='login')
 def tn_details_view(request, id):
     total_loan_amount = 0
     get_tn = TrustNetwork.objects.get(id=id)

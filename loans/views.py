@@ -93,6 +93,7 @@ def create_loan_view(request, id):
         return redirect('loan_borrowed', id=id)
 
 
+@login_required(login_url='login')
 def disbursment_status_view(request, transaction_id, id):
 
     borrower = Borrower.objects.get(id=id)

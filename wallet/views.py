@@ -19,6 +19,9 @@ import datetime
 from datetime import timezone
 import os
 from utils import xente_login, constants
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 
 header_api_key = settings.XENTE_API_KEY_RESELLER
@@ -35,7 +38,7 @@ headers={'X-ApiAuth-ApiKey':header_api_key,
 
 
 # Create your views here.
-
+@login_required(login_url='login')
 def show_wallet(request):
     df = DepositForm()
     wf = WithdrawForm()
@@ -96,7 +99,7 @@ def show_wallet(request):
     #get money collected
     
         
-    
+@login_required(login_url='login')    
 def get_wallet_collections_view(request):
     
     principal_sum = Loans.objects.all().aggregate(Sum('principal_amount'))['principal_amount__sum'] or 0.0
@@ -151,7 +154,7 @@ def get_wallet_collections_view(request):
 
 
 
-
+@login_required(login_url='login')
 def deposit_view(request):
     if request.method == 'POST':
         df = DepositForm(request.POST or None)
@@ -174,7 +177,7 @@ def deposit_view(request):
         df = DepositForm()
         return render(request, 'wallet/wallet.html', context={'df_form':df})
 
-
+@login_required(login_url='login')
 def withdraw_view(request):
     if request.method == 'POST':
         wf = WithdrawForm(request.POST or None)
@@ -197,7 +200,7 @@ def withdraw_view(request):
         return render(request, 'wallet/wallet.html', context={'wf_form':wf})
 
 
-class Transaction(ListView):
+class Transaction(LoginRequiredMixin, ListView):
     model = WalletDeposit
     template_name = 'wallet/wallet.html'
 

@@ -9,6 +9,7 @@ from loans.models import *
 from utils import calculations
 
 
+
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
