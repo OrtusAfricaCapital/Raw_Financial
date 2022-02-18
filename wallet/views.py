@@ -86,6 +86,16 @@ def show_wallet(request):
             'transactions':transaction_data,
         }
         return render(request, 'wallet/wallet.html', context)
+    else:
+        result_code = response.status_code
+        context = {
+            
+            'dep':balance,
+            'transactions':transaction_data,
+            'error_message':result_code
+        }
+        return render(request, 'wallet/wallet.html', context)
+
     
     
 
@@ -149,7 +159,7 @@ def get_wallet_collections_view(request):
             
             'transactions':transactions,
         }
-    return render(request, 'wallet/wallet.html', context)
+    return render(request, 'wallet/wallet_collections.html', context)
 
 
 
