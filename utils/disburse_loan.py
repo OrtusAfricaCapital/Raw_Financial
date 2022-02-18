@@ -33,7 +33,7 @@ def give_loan(amount, customer_id, email, customer_phone, customer_reference):
             'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
-
+    print(response)
     if response.status_code == 201:
         try:
             #print(response.json())
