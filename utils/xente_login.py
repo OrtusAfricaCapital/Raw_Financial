@@ -53,13 +53,7 @@ def get_token(api_key, api_password):
         os.environ['XENTE_TOKEN'] = response['token']
         time = 300
         result=True
-
         print(response)
-
-
-    
-        
-
     return result
 
 def get_token_reseller(api_key, api_password):
@@ -70,14 +64,14 @@ def get_token_reseller(api_key, api_password):
         'X-Correlation-ID':header_correlation_id, 
         'Content-Type':header_content_type}
     response = requests.request("POST", url, data=payload, headers=headers_reseller)
-    if response.status_code == 200:
+    if response.status_code != 200:
+        result = False
+        print(response.text)
+    else:
         response_data = response.json()
         result = True
         os.environ['XENTE_RESELLER_TOKEN'] = response_data['token']
         os.environ['REFRESH_XENTE_TOKEN'] = response_data['refreshToken']
-    else:
-        result = False
-        print(response.text)
-
+        
     return result
 
