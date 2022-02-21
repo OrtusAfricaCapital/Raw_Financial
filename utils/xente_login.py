@@ -60,7 +60,7 @@ def get_token_reseller(api_key, api_password):
     payload = json.dumps({'apiKey':api_key, 'password':api_password})
     url = base_url_reseller+'/api/v1/Auth/login?includeRefereshToken=true'
     headers_reseller={'X-ApiAuth-ApiKey':api_key_reseller, 
-        'X-Date':header_date, 
+        'X-Date':str(datetime.datetime.now(timezone.utc)), 
         'X-Correlation-ID':header_correlation_id, 
         'Content-Type':header_content_type}
     response = requests.request("POST", url, data=payload, headers=headers_reseller)
@@ -72,6 +72,6 @@ def get_token_reseller(api_key, api_password):
         result = True
         os.environ['XENTE_RESELLER_TOKEN'] = response_data['token']
         os.environ['REFRESH_XENTE_TOKEN'] = response_data['refreshToken']
-        
+
     return result
 
